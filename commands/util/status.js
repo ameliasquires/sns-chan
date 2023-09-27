@@ -46,7 +46,7 @@ module.exports = {
             const github = new ButtonBuilder()
                 .setLabel('Github')
                 .setStyle(ButtonStyle.Link)
-                .setURL('https://github.com/iamAGFX/snschan-bot')
+                .setURL('https://github.com/ameliasquires/sns-chan')
             const row = new ActionRowBuilder()
                 .addComponents(vote,discord,github);
             let conv = 1024 * 1024 * 1024
