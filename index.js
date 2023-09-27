@@ -7,7 +7,7 @@ process.stdout.write = process.stderr.write  = (function(write) {
       access.write(string)
   }
 })(process.stdout.write)
-process.title = "sns-chan"
+process.title = "sns\-chan"
 /**
  * Module Imports
  */

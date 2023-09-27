@@ -41,5 +41,5 @@
     "triggered":"triggered",
     "wag":"wagged",
     "wink":"winked"
-}},"cooldown":3600,"desc":"Sends a gif","restrict":[],"restricted":[],
+}},"cooldown":3600,"desc":"Sends a gif","restrict":["825023574221783102","1058360872587767819"],"restricted":[],
 "usage":"{command} [user]"}

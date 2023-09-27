@@ -76,8 +76,8 @@ module.exports = {
                         com_string.shift()
                         com_string = parse_inp(com_string.join(" "))
                         try{
-                            if(((!com.config.restrict||com.config.restrict.includes(message.channel))&&
-                                (!com.config.restricted||!com.config.restricted.includes(message.channel)))||mod)
+                            if(((!com.config.restrict||com.config.restrict.length==0||com.config.restrict.includes(message.channel))&&
+                                (!com.config.restricted||com.config.restricted.length==0||!com.config.restricted.includes(message.channel)))||mod)
                                 if(mod||com.config.cooldown==null||com.last_command[uid]==null||(date.getTime()-com.last_command[uid].getTime())/1000>com.config.cooldown){
                                     await com.main(client,Discord,message,com_string,com_call)
                                     com.last_command[uid] = new Date()
