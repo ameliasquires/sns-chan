@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<!--for embeds-->
+<meta property="og:type" content="website">
+<meta property="og:title" content="sns-chan ticket moderation:3">
+<meta property="og:description" content="verify with a key for details">
+<meta property="og:image" content="https://i.pinimg.com/originals/8f/52/1b/8f521bf9a52f7f9d3da912e4abf07979.png">
+<!--not ugly mobile view:p -->
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<html>
+
+<head>
+  <title>sns-chan</title>
+  <style>
+
+
+		.bar{
+			background: rgb(0,0,0,0.8);
+			background: linear-gradient(90deg, rgba(22,22,22,0.8) 0%, rgba(0,0,0,0.8) 35%, rgba(19,19,19,0.8) 100%);
+      backdrop-filter: blur(3px);	
+			 -webkit-backdrop-filter: blur(5px);
+		}
+		#top-bar{
+			width:100%;
+			position: sticky;
+			top: 0;
+			padding: 0px;
+			display:inline-block;
+				
+		}
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background-color: #f1f1f1;
+      font-family: Arial, monospace;
+   		overflow-x: hidden; 
+			overscroll-behavior: none;	
+		}
+
+    #msg-root {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      
+    }
+
+    .container {
+      max-width: 600px;
+      width: 90%;
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+
+    .header {
+      background-color: #555;
+      color: #fff;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .flex-container {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .ticket-item {
+      margin: 10px;
+      padding: 5px;
+      cursor: pointer;
+      background-color: #f9f9f9;
+      border-radius: 3px;
+    }
+
+    .ticket-sel {
+      background-color: #ffcba4;
+    }
+
+    .ticket-unsel {
+      background-color: #fff;
+    }
+
+    .messages-container {
+      
+      overflow-y: scroll;
+      padding: 10px;
+      padding-bottom:70px;
+			display:flex;
+      flex-direction: column;
+   		width: 100%; 
+		}
+    .msg {
+      display:flex;
+      padding: 5px;
+      flex-flow: wrap;
+    }
+    .user-msg {
+      background-color: #f9f9f9;
+      justify-content: left;
+    }
+
+    .mod-msg {
+      color: red;
+      justify-content: right;
+    }
+
+    .bottom-bar {
+			padding: 10px;
+			display: flex;
+			justify-content: center;
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			width: 100%;
+			overflow: hidden;
+			gap: 10px;	
+		}
+		textarea{
+			height:25px;
+			flex:.8;	
+		}
+
+    .bottom-bar input[type="text"] {
+      flex: 1;
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+    }
+
+    .bottom-bar button {
+      margin-left: 10px;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 3px;
+      background-color: #555;
+      color: #fff;
+      cursor: pointer;
+    }
+    #menu-sym {
+      display:block; 
+      top:0;
+      left:0;
+			z-index:5;
+   		cursor:pointer;
+			height: 29px;
+  		width: 32px;
+  		position: relative;
+  		margin: 12px;
+ 
+		}
+    #side-menu {
+      
+      width:300px;
+      height: 100%;
+      background-color: rgba(150, 150, 150, 1);
+      position:absolute;
+      top:0;
+      left:0;
+      overflow:scroll;
+   		z-index:4; 
+		}
+    .open-link::after {
+      content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAQElEQVR42qXKwQkAIAxDUUdxtO6/RBQkQZvSi8I/pL4BoGw/XPkh4XigPmsUgh0626AjRsgxHTkUThsG2T/sIlzdTsp52kSS1wAAAABJRU5ErkJggg==);
+      margin: 0 3px 0 5px;
+    }
+    .open-link{
+      display:block;
+    }
+    @keyframes lost-hover-select {
+      from {background-color: rgba(25,25,25,0.4);}
+      to {background-color: rgba(25,25,25,0.2);}
+    }
+    .ticket-list-elem{
+      user-select: none;
+      position: relative;
+      padding:5px;
+      margin:3px;
+      border-radius: 3px;
+      /*
+      animation-name: lost-hover-select;
+      animation-duration: .6s;
+      animation-fill-mode: forwards;*/
+      animation: lost-hover-select .6s forwards;
+    }
+    @keyframes lost-hover-select-new {
+      from {background-color: rgba(255,0,0,0.4);}
+      to {background-color: rgba(25,25,25,0.2);}
+    }
+    @keyframes flashing-color {
+      0%{
+        background-color: rgba(25,25,25,0.2);
+      }
+      35%{
+        background-color: rgba(150,25,25,.2);
+      }
+      65%{
+        background-color: rgba(150,25,25,.2);
+      }
+      100%{
+        background-color: rgba(25,25,25,.2);
+      }
+    }
+    .ticket-list-elem.new-ticket{
+      animation: lost-hover-select-new 1.4s forwards, flashing-color 2s infinite;
+    }
+    @keyframes hover-select {
+      from {background-color: rgba(25,25,25,0.2);}
+      to {background-color: rgba(25,25,25,0.4);}
+    }
+    .ticket-list-elem:hover{
+      animation-name: hover-select;
+      animation-duration: 1s;
+      animation-fill-mode: forwards;
+    }
+    @keyframes hover-select-new {
+      from {background-color: rgba(25,25,25,0.2);}
+      to {background-color: rgba(255,0,0,0.4);}
+    }
+    .ticket-list-elem.new-ticket:hover{
+      animation-name: hover-select-new;
+    }
+    .ticket-selected {
+      box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.2);
+    }
+    .menu-icon-bar{
+      background: black;
+      height: 5px;
+      margin: 5px;
+    }
+    .ticket-sel-pfp{
+      position:absolute;
+      top:50%;
+      transform: translateY(-50%);
+      width:22px;
+      border-radius: 20px;
+      margin-right:6px;
+    }
+    .ticket-sel-text{
+      margin-left:28px;
+    }
+    .ticket-list-elem-item{
+      padding-left: 35px;
+    }
+    pre{
+      display:inline-block;
+      margin:0;
+    }
+		.arrow-close {
+			cursor: pointer;
+  		height: 29px;
+  		width: 32px;
+  		position:relative;
+  		margin: 12px;
+		}
+		.arrow-part {
+			width: 8px;
+			left:9px;
+  		height: 18px;
+  		background: red;
+  		transform: rotate(-37deg);
+  		border-radius: 2px;
+  		position: absolute;
+		}
+		.arrow-part-2 { 
+  transform: rotate(-37deg); 
+  top: 10px;
+}
+.arrow-part-1 {
+  
+  transform: rotate(37deg); 
+  top: 0;
+}
+.farrow-part-2 { 
+  transform:scaleX(-1) rotate(-37deg); 
+  top: 10px;
+}
+.farrow-part-1 {
+  
+  transform:scaleX(-1) rotate(37deg); 
+  top: 0;
+}
+  </style>
+</head>
+
+  <script>
+    //cookie code taken from https://github.com/ameliasquires/kanna-site/blob/main/html/index.html
+    //which i probably stole from stackoverflow
+    function setCookie(name, value, days) {
+      var expires = "";
+      if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = "; expires=" + date.toUTCString();
+      }
+      document.cookie = name + "=" + (value || "") + expires + "; path=/";
+    }
+    function getCookie(name) {
+      var nameEQ = name + "=";
+      var ca = document.cookie.split(';');
+      for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+      }
+      return null;
+    }
+    function eraseCookie(name) {
+      document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+    }
+    function send(location, content) {
+      return new Promise((res, rej) => {
+        var xhr = new XMLHttpRequest();
+        let st = 'http://' + window.location.host + window.location.pathname + "/" + location
+        xhr.open("POST", st, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState == XMLHttpRequest.DONE) {
+            console.log('['+xhr.status+']'+' '+st)
+            res(xhr.responseText);
+          }
+        }
+        let out = {}
+        Object.assign(out, { json: true, enc: false }, content)
+        xhr.send(JSON.stringify(out))
+      })
+    }
+    let tickets;
+    //let tickets = [{ "id": 1, "ticket": "7twX-hTE", "message": "intro test", "status": "open", "author": "534554607330787381", "name": "nekomusu#0", "created": "6/22/2023, 2:16:46 AM", "messages": "[{\"msg\":\"<img src=\'hehe\' onerror='alert(`hi`)'>\",\"author\":\"534554607330787381\",\"attachments\":\"\",\"mod\":false},{\"msg\":\" sample reply\",\"author\":\"534554607330787381\",\"mod\":true}]", "attachments": null, "pfp": "https://cdn.discordapp.com/avatars/534554607330787381/f72aa9936aaf85e4a5787910ff28c136.webp", "createdAt": "2023-06-22T07:16:46.096Z", "updatedAt": "2023-06-22T07:17:06.667Z" },
+    //{ "id": 2, "ticket": "7ewX-hTE", "message": "intro test2", "status": "open", "author": "534554607330787381", "name": "nekomusu#0", "created": "6/22/2023, 2:16:46 AM", "messages": "[{\"msg\":\"hi:)\",\"author\":\"534554607330787381\",\"attachments\":\"https://media.discordapp.net/attachments/848349994082893884/1031317201732522046/unknown.png?width=708&height=398 https://media.discordapp.net/attachments/545076257369358338/1121494934130794586/IMG_9731.jpg?width=796&height=398\",\"mod\":false},{\"msg\":\" sample reply\",\"author\":\"534554607330787381\",\"mod\":true}]", "attachments": null, "pfp": "https://cdn.discordapp.com/avatars/534554607330787381/f72aa9936aaf85e4a5787910ff28c136.webp", "createdAt": "2023-06-22T07:16:46.096Z", "updatedAt": "2023-06-22T07:17:06.667Z" },
+    //{ "id": 3, "ticket": "7ywX-hTE", "message": "intro test2", "status": "open", "author": "534554607330787381", "name": "nekomusu#0", "created": "6/22/2023, 2:16:46 AM", "messages": "[]", "attachments": null, "pfp": "https://cdn.discordapp.com/avatars/534554607330787381/f72aa9936aaf85e4a5787910ff28c136.webp", "createdAt": "2023-06-22T07:16:46.096Z", "updatedAt": "2023-06-22T07:17:06.667Z" }];
+    let selected = -1;
+    function fetch() {
+      return new Promise(async (res, rej) => {
+        if (getCookie('main_key') == null) {
+          setCookie('main_key', window.prompt('you do not have a valid key, contact ans-chan (@nekomusu) for it'), 90)
+        }
+
+        let data = await send('data', { key: getCookie('main_key') })
+        if (data == 'failed') {
+          alert('invalid key, clearing cookies')
+          eraseCookie('main_key')
+          fetch()
+          return
+        }
+        tickets = JSON.parse(data)
+        res()
+      })
+    }
+
+    async function sendmsg(ticket, msg) {
+      if (await send('edit', { key: getCookie('main_key'), ticket: ticket, msg: msg, function: 'add' }) == 'failed') {
+        alert("invalid key, refetching")
+        console.log('[401] bad key')
+        fetch()
+      }
+      console.log('[200] accepted update (appended)')
+    }
+    async function closetkt(ticket) {
+      if (await send('edit', { key: getCookie('main_key'), ticket: ticket, function: 'close' }) == 'failed') {
+        alert("invalid key, refetching")
+        console.log('[401] bad key')
+        fetch()
+      }
+      console.log('[200] accepted update (closed)')
+    }
+    function sendmsg_wd(ticket, div) {
+      sendmsg(ticket, document.getElementById(div).value)
+    }
+    //https://github.com/ameliasquires/personal-site/blob/main/src/common.js
+    function appendHtml(el, str) {
+      var div = document.createElement('div');
+      div.innerHTML = str;
+      while (div.children.length > 0) {
+        el.appendChild(div.children[0]);
+      }
+    }
+    let menu_tickets_main_open = true;
+    let menu_tickets_open_open = true;
+    let menu_tickets_closed_open=false;
+    let side_bar_pers = 'none';
+    async function load() {
+			let ta = '<div id="top-bar" class="bar">';
+      ta += '<div id="menu-sym"><div class="arrow-part farrow-part-1"></div><div class="arrow-part farrow-part-2"></div></div>'
+			ta += '</div>'
+			//let ta = '<div class="flex-container">'
+      ta += '<div style="display:'+side_bar_pers+';" id="side-menu">'
+			ta += '<div class="arrow-close" id="arrow-close-menu"><div class="arrow-part arrow-part-1"></div><div class="arrow-part arrow-part-2"></div></div>'
+			if(menu_tickets_main_open){
+        ta+='<div id="toggle-all" class="ticket-list-elem" ><pre>-</pre> all tickets</div>'
+        if(menu_tickets_open_open){
+          ta+='<div id="toggle-open" class="ticket-list-elem">&emsp;<pre>-</pre> open tickets</div>'
+          //for(let i = 0; i!=22;i++){
+          for(let ticket of tickets){
+            if(ticket.status=='open'){
+              let msgss = JSON.parse(ticket.messages);
+              let replied = false;
+              for(let msg of msgss){
+                if(msg.mod){
+                  replied=true;
+                  break;
+                }
+              }
+              ta+='<a href="'+window.location.protocol+'//'+ window.location.host + window.location.pathname+'?ticket='+ticket.id+'" class="open-link ticket-list-elem ticket-list-elem-item '+(replied?'':'new-ticket')+' '+(selected==ticket.id?'ticket-selected':'')+'">'
+              ta+='<img src="'+ticket.pfp+'" class="ticket-sel-pfp"><span class="ticket-sel-text">'+ticket.ticket
+              ta+='</span></a>'
+            }
+          //}
+        }
+        } else {
+          ta+='<div id="toggle-open" class="ticket-list-elem">&emsp;<pre>+</pre> open tickets</div>'
+        }
+        if(menu_tickets_closed_open){
+          ta+='<div id="toggle-closed" class="ticket-list-elem">&emsp;<pre>-</pre> closed tickets</div>'
+          for(let ticket of tickets){
+            if(ticket.status!='open'){
+              ta+='<a href="'+window.location.protocol+'//'+window.location.host + window.location.pathname+'?ticket='+ticket.id+'" class="open-link ticket-list-elem ticket-list-elem-item '+(selected==ticket.id?'ticket-selected':'')+'">'
+              ta+='<img src="'+ticket.pfp+'" class="ticket-sel-pfp"><span class="ticket-sel-text">'+ticket.ticket
+              ta+='</span></a>'
+            }
+          }
+        } else {
+          ta+='<div id="toggle-closed" class="ticket-list-elem">&emsp;<pre>+</pre> closed tickets</div>'
+        }
+      } else {
+        ta+='<div id="toggle-all" class="ticket-list-elem"><pre>+</pre> all tickets</div>'
+      }
+			ta += '</div>'
+      ta += '<div id="msg-root">'
+        /*
+      ta+='<select id="ticket-dropdown">'
+      //for(let i = 0; i!= 999; i++){
+      for (let ticket of tickets) {
+        //ta += '<div  id="ticket-'+ticket.id+'" class="'+(selected==ticket.id?'ticket-sel':'ticket-unsel')+' ticket-item"">'+ticket.ticket+"</div>";
+        let msgss = JSON.parse(ticket.messages);
+        let replied = false;
+        for(let msg of msgss){
+          if(msg.mod){
+            replied=true;
+            break;
+          }
+        }
+        ta += '<option value="' + ticket.id + '" ' + (selected == ticket.id ? 'selected' : '') + '>' + (!replied?'(NEW)':'') + ticket.ticket + '</option>'
+      }
+      //}
+      ta += '</select>'
+      */
+      //document.body.innerHTML = ta
+      let valid_sel = false
+
+      for (let ticket of tickets) {
+
+
+        if (ticket.id == selected) {
+          valid_sel = ticket;
+          ta += '<div class="messages-container"> <div class="user-msg msg" >' + ticket.message.replace('<','&lt;').replace('</','&lt;/')+ '</div>';
+          let msgs = JSON.parse(ticket.messages);
+          for (let i = 0; i != 10; i++) {
+            for (let msg of msgs) {
+              
+              ta += '<div class="' + (msg.mod ? 'mod-msg' : 'user-msg') + ' msg">' + msg.message.replace('<','&lt;').replace('</','&lt;/')
+              if(msg.attachments&&msg.attachments.length>0){
+                for(let i of msg.attachments.split(' ')){
+                  ta += '</br><a href="'+i+'"> (image)</a>';
+                }
+              }
+              ta += '</div>'
+            }
+          }
+          ta += '</div>'
+
+
+          break;
+        }
+      }
+
+
+      if (valid_sel != false) {
+			ta += '<div class="bottom-bar bar"><textarea id="send-box"></textarea><button type="button" onclick="sendmsg_wd(`' + valid_sel.ticket + '`,`send-box`)">send</button><button type="button" onclick="closetkt(`' + valid_sel.ticket + '`)">close ticket</button></div>'
+        //appendHtml(document.body,bottombar);
+        //return;
+      }
+
+      //appendHtml(document.body,ta)
+      ta += '</div>'
+      //appendHtml(document.body, ta)
+      document.body.innerHTML = ta;
+      /*
+      
+      let ticket_elem = document.getElementById('ticket-dropdown');
+      ticket_elem.onchange = (() => {
+        selected = ticket_elem.value;
+        document.location.search = '?ticket=' + selected
+        load();
+      })
+      */
+			[document.getElementById('arrow-close-menu'),document.getElementById('menu-sym')].forEach((el)=>{	
+				el.onclick = (()=>{
+        	let menu = document.getElementById('side-menu')
+        	if(side_bar_pers=='none')
+          	side_bar_pers = 'block';
+        	else 
+          	side_bar_pers = 'none';
+        	menu.style.display = side_bar_pers
+      	})
+			})
+      document.getElementById('toggle-all').onclick = (()=>{
+        menu_tickets_main_open=!menu_tickets_main_open
+        load()
+      })
+      if(menu_tickets_main_open){
+        document.getElementById('toggle-closed').onclick = (()=>{
+          menu_tickets_closed_open=!menu_tickets_closed_open
+          load()
+        })
+        document.getElementById('toggle-open').onclick = (()=>{
+          menu_tickets_open_open=!menu_tickets_open_open
+          load()
+        })
+      }
+    }
+    async function init() {
+      const queryString = window.location.search;
+      const urlParams = new URLSearchParams(queryString);
+      selected = urlParams.get('ticket')
+      console.log('https://http.cat/')
+      await fetch();
+      load()
+      
+      //! hey:) would be best to put any js here
+    }
+  </script>
+  
+<body onload="init()">
+
+  
+</body>
+
+</html>

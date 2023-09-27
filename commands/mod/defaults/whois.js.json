@@ -1,0 +1,2 @@
+{"cooldown":-1,"desc":"Get info on user or role","restrict":[],"restricted":[],
+"usage":"{command} {userid|roleid|mention}"}

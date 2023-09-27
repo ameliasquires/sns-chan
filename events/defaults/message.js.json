@@ -1,0 +1,6 @@
+{
+"restrict-channels":{"value":["825023574221783102","754582601766928456","545076257369358338"]},
+"error-message":{"value":"failed to execute command:("},"error-timeout":{"value":10000},
+"error-message-auth":{"value":"you are not authorized to use this:(("},
+"error-message-not-found":{"value":"i couldnt find that command:( were you talking to me?"},
+"error-message-not-here":{"value":"cant use that here!"}}

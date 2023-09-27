@@ -1,0 +1,128 @@
+//process mods redirection
+const fs = require("fs");
+var access = fs.createWriteStream('./log');
+process.stdout.write = process.stderr.write  = (function(write) {
+  return function(string, encoding, fd) {
+      write.apply(process.stdout, arguments)
+      access.write(string)
+  }
+})(process.stdout.write)
+process.title = "sns-chan"
+/**
+ * Module Imports
+ */
+const { Client, Collection, EmbedBuilder, ActivityType, GatewayIntentBits, Partials, Events, SlashCommandBuilder, PermissionsBitField} = require("discord.js");
+const Discord = require('discord.js');
+const dotenv = require("dotenv").config();
+const TOKEN = process.env.TOKEN;
+const path = require("path");
+let db = require("./src/db");
+
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.DirectMessages,
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildBans,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildVoiceStates,
+    GatewayIntentBits.GuildMessageReactions,
+    GatewayIntentBits.DirectMessages,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.DirectMessageReactions,
+    GatewayIntentBits.DirectMessageTyping,
+    //GatewayIntentBits.GuildPresences
+  ],
+  partials: [Partials.Message, Partials.Channel, Partials.Reaction, Partials.User]
+});
+
+client.login(TOKEN);
+
+let commands = []
+let s_commands = []
+fs.readdirSync("./commands/").forEach(folder => {
+  fs.readdirSync("./commands/"+folder).forEach(file => {
+    if(path.extname(file)==".js"){
+      try{
+        let com = require("./commands/"+folder+"/"+file)
+        com.last_command = {};
+        commands.push(com)
+        if(com.s_main!=null){
+          let scom = new SlashCommandBuilder()
+            .setName(com.name.replace(/ /g,'-'))
+            .setDescription(com.config.desc)
+          if(com.mod_only)
+            scom.setDefaultMemberPermissions(PermissionsBitField.Flags.KickMembers)
+          if(com.s_options!=null){
+            for(let opt of com.s_options){
+              switch(opt.type){
+                case 'string':
+                  scom.addStringOption(option =>
+                    option.setName(opt.name)
+                      .setDescription(opt.desc)
+                      .setRequired(opt.required)
+                      .setAutocomplete(opt.autocomplete!=null&&opt.autocomplete!=false))
+                  break;
+                case 'channel':
+                  scom.addChannelOption(option =>
+                  option.setName(opt.name)
+                    .setDescription(opt.desc)
+                    .setRequired(opt.required))
+                  break;
+                case 'user':
+                  scom.addUserOption(option =>
+                  option.setName(opt.name)
+                    .setDescription(opt.desc)
+                    .setRequired(opt.required))
+                  break;
+                case 'role':
+                  scom.addRoleOption(option =>
+                  option.setName(opt.name)
+                    .setDescription(opt.desc)
+                    .setRequired(opt.required))
+                  break;
+                case 'attachment':
+                  scom.addAttachmentOption(option =>
+                  option.setName(opt.name)
+                    .setDescription(opt.desc)
+                    .setRequired(opt.required))
+                  break;
+              }
+              
+            }
+            scom.opt = com.s_options
+          }
+          scom = scom.toJSON()
+          scom.command = com
+          s_commands.push(scom)
+        }
+      } catch (e) {
+        if(e.code=="ENOENT"){
+          console.log("[ENOENT] missing some config files:( run 'sh buildconfig.sh' to get them\nexiting~")
+          process.exit(e.errno)
+        }
+        console.log("["+e.code+"]"+" unexpected error:( something is wrong with the ./commands/*/* files\n****\n")
+        console.log(e)
+        
+        process.exit(e.errno)
+      }
+    }
+  })
+})
+
+client.env = process.env
+global.commands = commands;
+global.s_commands = s_commands;
+
+fs.readdirSync("./events/").forEach(file => {
+  if(path.extname(file)==".js")
+    require("./events/"+file).main(client,Discord)
+})
+
+try{
+  require("./src/webui")
+} catch(e) {
+  console.log("failed loading webui:c")
+}

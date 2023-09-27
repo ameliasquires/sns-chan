@@ -1,0 +1,2 @@
+{"cooldown":-1,"desc":"Send a message per interval:)","restrict":[],"restricted":[],
+"usage":"{command} {add {channel} {message} {delay (in s,m,h,d)} |rem {channel}|dump} [embed]","embed_color":"#fcc356"}

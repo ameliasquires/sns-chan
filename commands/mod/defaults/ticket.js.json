@@ -1,0 +1,2 @@
+{"cooldown":-1,"desc":"Interact with the tickets database, and respond to them.","restrict":[],"restricted":[],
+"usage":"{command} {reply {ticket} [message] [attachments]|close {ticket}|dump {ticket}"}

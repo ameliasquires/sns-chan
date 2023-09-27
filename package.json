@@ -1,0 +1,37 @@
+{
+  "name": "snschan",
+  "version": "0.10.0",
+  "description": "Discord music bot built with discord.js",
+  "main": "index.js",
+  "author": "Ryzyx",
+  "private": true,
+  "homepage": "https://github.com/ryzyx/sns-chan",
+  "repository": "github:ryzyx/sns-chan",
+  "bugs": "https://github.com/ryzyx/sns-chan/issues",
+  "engines": {
+    "node": "=16.6.1"
+  },
+  "dependencies": {
+    "@discordjs/opus": "^0.5.0",
+    "@discordjs/voice": "^0.11.0",
+    "discord-embedbuilder": "^4.0.0",
+    "discord-together": "^1.3.3",
+    "discord.js": "^14.8.0",
+    "dotenv": "^9.0.2",
+    "express": "^4.17.1",
+    "ffmpeg-static": "^4.2.3",
+    "git-last-commit": "^1.0.1",
+    "os-utils": "^0.0.14",
+    "sequelize": "^6.32.1",
+    "sharp": "^0.32.6",
+    "sqlite3": "^5.1.6",
+    "weeby-js": "^1.0.3"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "devDependencies": {
+    "@types/node": "^18.7.19",
+    "eslint": "^8.47.0"
+  }
+}

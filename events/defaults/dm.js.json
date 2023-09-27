@@ -1,0 +1,5 @@
+{
+    "ticket-id-chars":{"value":"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"},
+    "ticket-id-length":{"value":7},
+    "ticket-id-split":{"value":3}
+}

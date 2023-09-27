@@ -1,0 +1,5 @@
+{
+    "status":{"value":"dm to report an issue"},
+    "type":{"value":"Playing","options":["Listening","Playing","Streaming","Watching"]},
+    "timed_interval":{"value":5000}
+}
