@@ -13,9 +13,9 @@ module.exports = {
     config:config,
     config_loc:config_loc,
     async main (client,Discord,message,args){
-        let uid2 = args[1];
-        if(uid2[0]=='<') uid2 = (args[1].substring(2,args[1].length-1))
-        this.exec(client,{action:args[0],message:message,user2:uid2})
+        //let uid2 = args[1];
+        //if(uid2[0]=='<') uid2 = (args[1].substring(2,args[1].length-1))
+        this.exec(client,{action:args[0],message:message,id:args[1]})
     },
     async board_prev(args){
         const move_y = 82
@@ -76,7 +76,7 @@ module.exports = {
         const file = new AttachmentBuilder('/tmp/battleship-board.png');
         let mess = args.mm;
         if(args.mm==null)
-            mess = await args.message.reply({embeds:[embed],files:[file],components:[row1,row2]});
+            mess = await args.message.reply({embeds:[embed],files:[file],components:[row1,row2],ephemeral:true});
         else mess = await args.mm.edit({embeds:[embed],files:[file],components:[row1,row2]});
         args.mm = mess;
         async function rec_edit(mess){
@@ -157,6 +157,17 @@ module.exports = {
                 
                 break;
             case 'create':
+            case 'join':
+                let bttl_db;
+                if(args.action=='join'){
+                    bttl_db = await db.BattleShip.findAll({where:{_id:args.id,p2_id:'null',status:"open"}})
+                    if(bttl_db.length==0)
+                        return args.message.reply({content:"id not found!",ephemeral:true})
+                }
+                let game_test = db.BattleShip.findAll({where:{p1_id:args.message.author.id,status:"open"}})
+                if(game_test.length!=0)
+                    return args.message.reply({content:"you are already in a game!",ephemeral:true})
+                
                 let planned = [4,3,2,1]
                 let placements = []
                 let newboard = []
@@ -175,7 +186,8 @@ module.exports = {
                     temp.len = l;
                     placements.push(temp)
                 }
-                await temp.mm.edit({embeds:[],files:[],components:[],content:"wowa"})
+    
+                
                 for(let p of placements){
                     if(p.rotated){
                         for(let i = 0; i!=p.len; i++)
@@ -186,15 +198,37 @@ module.exports = {
                     }
                 }
 
-                db.BattleShip.create({
-                    turn:0,
-                    p1_id:args.message.author.id,
-                    p2_id:args.user2,
-                    p1_board:JSON.stringify(newboard),
-                    p2_board:'null',
-                })
+                if(args.action=='create'){
+                    let id = this.generate_id();
+                    await temp.mm.edit({embeds:[],files:[],components:[],content:"your invite id is "+id+", send it to a friend to play!"})
 
+                    db.BattleShip.create({
+                        status:"open",
+                        _id:id,
+                        turn:0,
+                        p1_id:args.message.author.id,
+                        p2_id:'null',
+                        p1_board:JSON.stringify(newboard),
+                        p2_board:'null',
+                    })
+                } else if(args.action=='join'){
+                    await temp.mm.edit({embeds:[],files:[],components:[],content:"game created! you can now play, try `sns help battleship` for more info!"})
+                    db.BattleShip.update({
+                        p2_id:args.message.author.id,
+                        p2_board:JSON.stringify(newboard)
+                    },{where:{id:bttl_db[0].id}})
+                }
                 break;
         }
+    },
+    generate_id(){
+        //taken from ./events/dm.js you should standardize it
+        var ticket = "";
+        var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        for (var i = 0; i < 7; i++) {
+            ticket += characters.charAt(Math.floor(Math.random() * characters.length));
+            if (i == 4) ticket += "-";
+        }
+        return ticket
     }
 }

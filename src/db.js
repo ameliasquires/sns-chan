@@ -49,6 +49,8 @@ db.Timed_Message = _db_raw.define('Timed_Message', {
 });
 
 db.BattleShip = _db_raw.define('BattleShip', {
+    status: DataTypes.TEXT,
+    _id: DataTypes.TEXT,
     turn: DataTypes.INTEGER,
     p1_id: DataTypes.TEXT,
     p2_id: DataTypes.TEXT,
@@ -58,6 +60,7 @@ db.BattleShip = _db_raw.define('BattleShip', {
 });
 
 try {
+    //db.BattleShip.sync({force:true})
     db._raw.authenticate();
     console.log('db connected');
 } catch (error) {
