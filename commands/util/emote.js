@@ -19,7 +19,11 @@ module.exports = {
     s_options:[{type:"string",name:"emote",desc:"emote to send",required:true,autocomplete:subs},
             {type:"user",name:"user",desc:"user to emote to (may be optional)",required:false,autocomplete:false}],
     async s_main (client,Discord,interaction){
-        this.exec(client,{message:interaction,emote:interaction.options.getString("emote"),mentioned:interaction.options.getUser("user")})
+        let emote = interaction.options.getString("emote");
+        if(Object.keys(config.avaliable_multi).includes(emote)||Object.keys(config.avaliable_solo).includes(emote))
+            this.exec(client,{message:interaction,emote:emote,mentioned:interaction.options.getUser("user")})
+        else 
+            interaction.reply({content:"invalid emote!", ephemeral: true})
     },
     async exec(client,param){
         let msg = "";

@@ -8,6 +8,7 @@ process.stdout.write = process.stderr.write  = (function(write) {
   }
 })(process.stdout.write)
 process.title = "sns\-chan"
+console.log("["+process.pid+"] running under the name "+process.title)
 /**
  * Module Imports
  */
@@ -64,6 +65,12 @@ fs.readdirSync("./commands/").forEach(folder => {
                       .setDescription(opt.desc)
                       .setRequired(opt.required)
                       .setAutocomplete(opt.autocomplete!=null&&opt.autocomplete!=false))
+                  break;
+                case 'bool': case 'boolean':
+                  scom.addBooleanOption(option =>
+                    option.setName(opt.name)
+                      .setDescription(opt.desc)
+                      .setRequired(opt.required))
                   break;
                 case 'channel':
                   scom.addChannelOption(option =>

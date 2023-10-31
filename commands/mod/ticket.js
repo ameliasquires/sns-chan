@@ -78,6 +78,7 @@ module.exports = {
             break;
         case 'dump':
         case 'list':
+            if(param.ticket_id==null) return param.message.reply("you must provide a ticket id")
             tickets = await db.Tickets.findAll({where:{ticket:param.ticket_id}})
             if(tickets.length==0){
                 return param.message.reply("ticket not found:c")

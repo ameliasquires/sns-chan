@@ -70,13 +70,19 @@ module.exports = {
     let created = new Date(parseInt(user.user.createdAt / 1000, 10)*1000).toLocaleDateString(undefined,{ weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     let mod = user.permissions!=null&&user.permissions?.has(PermissionsBitField.Flags.KickMembers)
     let roles = ""
-    //console.log(message.mentions.users)
+    let color = {pos:-1,color:settings.defaultColor};
+
     message.channel.send("loading ids").then(async(m)=>{
         await m.edit("<@!"+user.id+">")
         m.delete()
     })
-    for(let r of user._roles)
-        roles+="<@&"+r+"> "
+    for(let r in user._roles){
+        let role = message.guild.roles.cache.get(user._roles[r])
+        if(role.color!=0&&role.rawPosition>color.pos)
+            color={pos:role.rawPosition,color:role.color}
+        roles+="<@&"+user._roles[r]+"> "
+    }
+    
     const embed = new EmbedBuilder()
         .setAuthor({name:user.user.username,iconURL:user.displayAvatarURL()})
         .setThumbnail(user.displayAvatarURL())
@@ -85,12 +91,12 @@ module.exports = {
                     { name: 'Created', value:created , inline: true },
                     { name: 'Roles ['+user._roles.length+']', value:roles }])
         .setFooter({text:"id:"+user.id})
-        .setColor(settings.defaultColor)
+        .setColor(color.color)
     message.reply({embeds:[embed]})
   },
   async p_role(client,Discord,message,role){
     let members = " "
-    //console.log(message.guild.members)
+
     let members_m = Object.fromEntries(message.guild.roles.cache.get(role.id).members)
     let members_a = []
     for(let k of Object.keys(members_m)){
@@ -114,7 +120,7 @@ module.exports = {
         .addFields([{ name: 'Mentionable', value:(role.mentionable?"true":"false"), inline: true },
                     {name: 'Users ['+role.members.size+"]",value:members}])
         .setFooter({text:"id:"+role.id})
-        .setColor(settings.defaultColor)
+        .setColor(role.color)
     message.reply({embeds:[embed]})
   }
 };
