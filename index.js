@@ -95,7 +95,6 @@ function update_options(scom,options){
             subcommand
               .setName(opt.name)
               .setDescription("test")
-            console.log(opt.options)
             return update_options(subcommand, opt.options)
         })
         break;

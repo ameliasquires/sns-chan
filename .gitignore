@@ -60,6 +60,7 @@ typings/
 # Yarn Integrity file
 .yarn-integrity
 
+pnpm-lock.yaml
 
 #ignore configs
 events/*.json
