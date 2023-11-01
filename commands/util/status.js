@@ -23,7 +23,7 @@ module.exports = {
     },
     async exec(client,message){
         getLastCommit(async (err,commit)=>{
-            let changed = execSync('git --no-pager diff --minimal --name-only').toString().split('\n')
+            let changed = execSync('git --no-pager diff --minimal --name-only').toString().split('\n').filter((s) => s!='')
             let seconds = Math.floor(message.client.uptime / 1000);
             let minutes = Math.floor(seconds / 60);
             let hours = Math.floor(minutes / 60);
