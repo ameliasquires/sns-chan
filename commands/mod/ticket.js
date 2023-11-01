@@ -24,7 +24,7 @@ module.exports = {
     this.exec(client,{att:matt,action:action,ticket_id:ticket_id,r_message:r_message,message:message})
   },
   s_options:[{type:"string",name:"ticket",desc:"ticket id",required:true,autocomplete: async function(){ let tik = await db.Tickets.findAll({attributes:['ticket'],where:{status:'open'}}); let out = []; for(let t of tik) out.push(t.ticket); return out; }},
-            {type:"string",name:"action",desc:"operation to perform",required:true,autocomplete:["reply","close","dump"]},
+            {type:"string",name:"action",desc:"operation to perform",required:true,autocomplete:false,choices:["reply","close","dump"]},
             {type:"string",name:"message",desc:"message to reply with",required:false,autocomplete:false},
             {type:"attachment",name:"attachment",desc:"attachment to reply with",required:false,autocomplete:false}],
   async s_main(client,Discord,interaction){

@@ -41,6 +41,71 @@ const client = new Client({
 
 client.login(TOKEN);
 
+function update_options(scom,options){
+  for(let opt of options){
+    let autocomplete = opt.autocomplete!=null&&opt.autocomplete!=false;
+    switch(opt.type){
+      case 'string':
+        scom.addStringOption(option => {
+          option.setName(opt.name)
+            .setDescription(opt.desc)
+            .setRequired(opt.required)
+            .setAutocomplete(autocomplete)
+            if(!autocomplete&&opt.choices!=null&&opt.choices!=false){
+              if(typeof opt.choices[0] === 'string'){
+                for(let i in opt.choices) opt.choices[i] = {name:opt.choices[i],value:opt.choices[i]}
+              }
+              option.setChoices(...opt.choices)
+            } 
+            return option;
+          })
+        break;
+      case 'bool': case 'boolean':
+        scom.addBooleanOption(option =>
+          option.setName(opt.name)
+            .setDescription(opt.desc)
+            .setRequired(opt.required))
+        break;
+      case 'channel':
+        scom.addChannelOption(option =>
+        option.setName(opt.name)
+          .setDescription(opt.desc)
+          .setRequired(opt.required))
+        break;
+      case 'user':
+        scom.addUserOption(option =>
+        option.setName(opt.name)
+          .setDescription(opt.desc)
+          .setRequired(opt.required))
+        break;
+      case 'role':
+        scom.addRoleOption(option =>
+        option.setName(opt.name)
+          .setDescription(opt.desc)
+          .setRequired(opt.required))
+        break;
+      case 'attachment':
+        scom.addAttachmentOption(option =>
+        option.setName(opt.name)
+          .setDescription(opt.desc)
+          .setRequired(opt.required))
+        break;
+      case 'sub':
+        scom.addSubcommand(subcommand => {
+            subcommand
+              .setName(opt.name)
+              .setDescription("test")
+            console.log(opt.options)
+            return update_options(subcommand, opt.options)
+        })
+        break;
+    }
+    
+  }
+  scom.opt = options
+  return scom;
+}
+
 let commands = []
 let s_commands = []
 fs.readdirSync("./commands/").forEach(folder => {
@@ -57,49 +122,7 @@ fs.readdirSync("./commands/").forEach(folder => {
           if(com.mod_only)
             scom.setDefaultMemberPermissions(PermissionsBitField.Flags.KickMembers)
           if(com.s_options!=null){
-            for(let opt of com.s_options){
-              switch(opt.type){
-                case 'string':
-                  scom.addStringOption(option =>
-                    option.setName(opt.name)
-                      .setDescription(opt.desc)
-                      .setRequired(opt.required)
-                      .setAutocomplete(opt.autocomplete!=null&&opt.autocomplete!=false))
-                  break;
-                case 'bool': case 'boolean':
-                  scom.addBooleanOption(option =>
-                    option.setName(opt.name)
-                      .setDescription(opt.desc)
-                      .setRequired(opt.required))
-                  break;
-                case 'channel':
-                  scom.addChannelOption(option =>
-                  option.setName(opt.name)
-                    .setDescription(opt.desc)
-                    .setRequired(opt.required))
-                  break;
-                case 'user':
-                  scom.addUserOption(option =>
-                  option.setName(opt.name)
-                    .setDescription(opt.desc)
-                    .setRequired(opt.required))
-                  break;
-                case 'role':
-                  scom.addRoleOption(option =>
-                  option.setName(opt.name)
-                    .setDescription(opt.desc)
-                    .setRequired(opt.required))
-                  break;
-                case 'attachment':
-                  scom.addAttachmentOption(option =>
-                  option.setName(opt.name)
-                    .setDescription(opt.desc)
-                    .setRequired(opt.required))
-                  break;
-              }
-              
-            }
-            scom.opt = com.s_options
+            update_options(scom,com.s_options);
           }
           scom = scom.toJSON()
           scom.command = com

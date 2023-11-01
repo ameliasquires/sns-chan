@@ -30,7 +30,7 @@ module.exports = {
     async main (client,Discord,message,args){
         this.exec(client,{message:message,specify:args[0]})
     },
-    s_options:[{type:"string",name:"command",desc:"command to be specified",required:false,autocomplete:command_names}],
+    s_options:[{type:"string",name:"command",desc:"command to be specified",required:false,autocomplete:false,choices:command_names}],
     async s_main(client,Discord,interaction){
         this.exec(client,{message:interaction,specify:interaction.options.getString("command")})
     },
