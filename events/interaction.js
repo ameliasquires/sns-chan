@@ -16,6 +16,7 @@ module.exports = {
             if(!settings["allowed-servers"].includes(interaction.guild.id))
                 return console.log("denied interaction from (guild)"+interaction.guild.id)
             let date = new Date()
+            interaction.author = interaction.user
             if(interaction.isChatInputCommand()){
                 
                 await interaction.guild.members.fetch()
@@ -27,7 +28,7 @@ module.exports = {
                     return interaction.reply({content:"you cannot send this here! try `sns help` for more info",ephemeral:true})
                 if(command==null)
                     return;
-                interaction.author = interaction.user
+                
                 let uid = interaction.user.id;
 
                 if(!mod&&command.command.last_command[uid]!=null&&(date.getTime()-command.command.last_command[uid].getTime())/1000<command.command.config.cooldown)
@@ -41,8 +42,14 @@ module.exports = {
 
                 const focused = interaction.options.getFocused(true);
                 let command = global.s_commands.find(o => o.name === interaction.commandName)
+                if(interaction.options._subcommand!=null){
+                    //command = command.options.find(o => o.name === interaction.options._subcommand).options.find(o => o.name === focused.name)
+                    command = (command.command.s_options.find(o => o.name === interaction.options._subcommand))
+                    command.opt = command.options;
+                }
                 let subcommand = command.opt.find(o => o.name === focused.name)
-                let autocomplete = (typeof subcommand.autocomplete === 'function' ? await  subcommand.autocomplete() :  subcommand.autocomplete);
+
+                let autocomplete = (typeof subcommand.autocomplete === 'function' ? await  subcommand.autocomplete(interaction) :  subcommand.autocomplete);
                 const filtered = autocomplete.filter(choice => choice.startsWith(focused.value));
                 if(filtered.length>25)
                     filtered.length=25

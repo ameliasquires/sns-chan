@@ -17,6 +17,18 @@ module.exports = {
                 return require("./dm").main(client,Discord,message)
             if(!settings["allowed-servers"].includes(message.guild.id)||message.author.bot||message.member==null)
                 return;
+            //track message
+            let utrack = await db.Track.findAll({where:{user:message.author.id,track:true}})
+            if(utrack.length!=0){
+                utrack = utrack[0];
+                let words = JSON.parse(utrack.words);
+                for(let w of words){
+                    if(message.content.includes(w.word)) w.count+=message.content.split(w.word).length-1;
+                }
+                db.Track.update({words:JSON.stringify(words)},{where:{user:message.author.id,track:true}})
+            }
+            //done w/ track
+
             //handle sticky messages
             let stickies = await db.Sticky.findAll();
             for(let s of stickies){

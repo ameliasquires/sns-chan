@@ -24,6 +24,7 @@ module.exports = {
     async exec(client,message){
         getLastCommit(async (err,commit)=>{
             let changed = execSync('git --no-pager diff --minimal --name-only').toString().split('\n').filter((s) => s!='')
+            let changed_d = execSync('git diff --shortstat --minimal').toString()
             let seconds = Math.floor(message.client.uptime / 1000);
             let minutes = Math.floor(seconds / 60);
             let hours = Math.floor(minutes / 60);
@@ -38,6 +39,7 @@ module.exports = {
                 .setLabel('Vote')
                 .setStyle(ButtonStyle.Link)
                 .setURL('https://top.gg/servers/486957006628847626/vote')
+                //
             /*const twitter = new ButtonBuilder() //0% chance i will call this 𝕏
                 .setLabel('Twitter')
                 .setStyle(ButtonStyle.Link)
@@ -59,7 +61,7 @@ module.exports = {
                 .setTitle("Server info")
                 .setDescription(uptime+"\n"+sys)
                 .setColor(settings.defaultColor)
-                .setFooter({text:"running "+commit.shortHash+" ("+commit.branch+") + " + changed.length + " uncommited files"})
+                .setFooter({text:"running "+commit.shortHash+" ("+commit.branch+") + (live)" +  (changed.length>0?changed_d:"")})
             message.reply({embeds:[emoteembed],components:[row]})
         })
     }

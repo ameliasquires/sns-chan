@@ -59,6 +59,13 @@ db.BattleShip = _db_raw.define('BattleShip', {
 }, {
 });
 
+db.Track = _db_raw.define('Track', {
+    user: DataTypes.TEXT,
+    words: DataTypes.TEXT,
+    track: DataTypes.BOOLEAN,
+}, {
+});
+
 try {
     //db.BattleShip.sync({force:true})
     db._raw.authenticate();

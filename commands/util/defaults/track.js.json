@@ -1,0 +1,2 @@
+{"cooldown":-1,"desc":"Track a certain word, or opt-in","restrict":[],"restricted":[],
+"usage":"{command} {opt-in | opt-out | del | reg <words..> | unreg <words..>, list}"}
