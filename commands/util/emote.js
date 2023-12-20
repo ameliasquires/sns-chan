@@ -25,6 +25,24 @@ module.exports = {
         else 
             interaction.reply({content:"invalid emote!", ephemeral: true})
     },
+    async get_pronouns(message, userid){
+        let pronoun = null
+        let count = 0
+        /*
+            would add more pronouns, but we dont have any pronoun roles
+        */
+        message.member.roles.cache.some((r) => {
+            switch(r.name.toLowerCase()){
+                case "she/her":
+                    pronoun = "herself"; count++
+                    break;
+                case "he/him":
+                    pronoun = "himself"; count++
+                    break;
+            }
+        })
+        return count == 1? pronoun : "themselves"
+    },
     async exec(client,param){
         let msg = "";
         if(Object.keys(config.avaliable_multi.value).includes(param.emote)){
@@ -32,7 +50,7 @@ module.exports = {
             if(!param.mentioned)
                 return param.message.reply({content:"please mention someone", ephemeral: true})
             if(param.mentioned.id==param.message.author.id)
-                msg="<@"+param.message.author.id+"> "+config.avaliable_multi.value[param.emote]+" themselves"
+                msg="<@"+param.message.author.id+"> "+config.avaliable_multi.value[param.emote]+" "+await this.get_pronouns(param.message, param.message.author.id)
             else if(param.mentioned.id=="762561860150362142")
                 msg="<@"+param.message.author.id+"> "+config.avaliable_multi.value[param.emote]+" me!"
             else 

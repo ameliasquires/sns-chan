@@ -164,7 +164,8 @@ module.exports = {
                     if(bttl_db.length==0)
                         return args.message.reply({content:"id not found!",ephemeral:true})
                 }
-                let game_test = db.BattleShip.findAll({where:{p1_id:args.message.author.id,status:"open"}})
+                let game_test = await db.BattleShip.findAll({where:{p1_id:args.message.author.id,status:"open"}})
+
                 if(game_test.length!=0)
                     return args.message.reply({content:"you are already in a game!",ephemeral:true})
                 

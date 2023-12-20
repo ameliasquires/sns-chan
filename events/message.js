@@ -5,6 +5,7 @@ const { parse_inp } = require("../src/util")
 const { channel } = require('diagnostics_channel');
 const { PermissionsBitField } = require('discord.js');
 const { EmbedBuilder } = require("discord.js");
+const util = require("../src/util")
 let settings = require('../src/settings')
 let config_loc = __filename+".json"
 module.exports = {
@@ -17,13 +18,55 @@ module.exports = {
                 return require("./dm").main(client,Discord,message)
             if(!settings["allowed-servers"].includes(message.guild.id)||message.author.bot||message.member==null)
                 return;
+
+            //spam messages
+            for(let i = 0; i < global.recent_messages.length; i++){
+                let diff = util.diff((new Date(message.createdTimestamp)).getUTCSeconds(),(new Date(global.recent_messages[i].createdTimestamp)).getUTCSeconds());
+
+                if(diff>2){
+                    global.recent_messages.splice(i,1);
+                    i = -1;
+                }
+            }
+
+            let matching_ids = [];
+            for(let i = 0; i < global.recent_messages.length; i++){
+                let m = global.recent_messages[i];
+                if((m.content==message.content||util.similarity(m.content,message.content))&&m.author==message.author){
+                    matching_ids.push(m);
+                }
+            }
+            global.recent_messages.push(message)
+            if(matching_ids.length > 3){
+                //let temp_msg = global.recent_messages;
+                global.recent_messages = global.recent_messages.filter(x => x.author != message.author)
+                let could_timeout = true
+                try{
+                    await message.member.timeout(60000)
+                } catch (e) {
+                    could_timeout = false;
+                }
+                for(let mm of matching_ids){
+                    mm.delete();
+                    //try { await mm.delete(); } catch (e) {}
+                }
+                
+                let embed = new EmbedBuilder()
+                    .setColor(settings.defaultColor)
+                    .setTitle("Spam:(")
+                    .setDescription("<@"+message.author.id+"> sent "+matching_ids.length+" messages, similar to or matching \n`"+message.content+"`")
+
+                global.channels["admin-chan"].send({ embeds: [embed]})
+            }
+            //done w/ spam
+
             //track message
             let utrack = await db.Track.findAll({where:{user:message.author.id,track:true}})
             if(utrack.length!=0){
                 utrack = utrack[0];
                 let words = JSON.parse(utrack.words);
                 for(let w of words){
-                    if(message.content.includes(w.word)) w.count+=message.content.split(w.word).length-1;
+                    if(message.content.toLowerCase().includes(w.word)) w.count+=message.content.split(w.word).length-1;
                 }
                 db.Track.update({words:JSON.stringify(words)},{where:{user:message.author.id,track:true}})
             }
@@ -66,7 +109,7 @@ module.exports = {
                 
             }
             //done w/ auto reactions
-
+            
             //deal with commands
             let remove = function(msg) {setTimeout(async()=>{try{await msg.delete()}catch(e){}},config["error-timeout"].value)}
             let date = new Date()

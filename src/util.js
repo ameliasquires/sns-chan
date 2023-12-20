@@ -1,6 +1,9 @@
 const rem_emp = function (e) {return e !== "";}
 
 module.exports = { 
+  diff(a,b){
+    return (a>b)?(a-b):(b-a);
+  },
   upload_limit(guild){
     //https://stackoverflow.com/questions/66396146/get-channels-filesize-limit
     switch (guild.premiumTier) {

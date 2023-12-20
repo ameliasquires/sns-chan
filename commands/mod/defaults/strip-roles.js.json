@@ -1,0 +1,2 @@
+{"cooldown":-1,"desc":"Remove all roles from a user","restrict":[],"restricted":[],
+"usage":"{command} [user, ...]"}

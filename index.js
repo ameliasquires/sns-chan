@@ -144,6 +144,7 @@ fs.readdirSync("./commands/").forEach(folder => {
 client.env = process.env
 global.commands = commands;
 global.s_commands = s_commands;
+global.recent_messages = [];
 
 fs.readdirSync("./events/").forEach(file => {
   if(path.extname(file)==".js")
