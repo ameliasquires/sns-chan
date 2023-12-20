@@ -1,6 +1,0 @@
-[3922104] running under the name sns-chan
-db connected
-listening at http://localhost:7001
-loaded 12 slash commands for 2 guilds, and denied 1 guilds
-online!
-Possible AsyncEventEmitter memory leak detected. 11 error listeners added to WebSocketShard. Use emitter.setMaxListeners() to increase the limit.
