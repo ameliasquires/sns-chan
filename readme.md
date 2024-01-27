@@ -10,7 +10,7 @@ made for linux or unix systems, running elsewhere isnt supported but should prob
 - `npm i`
 - put tokens and api keys in .env-example, and move it to .env
 - `sh buildconfig.sh`
-- `node .` or `sh snschan.sh` (to restart on error)
+- `node index.js` or `sh snschan.sh` (to restart on error)
 
 
 ## todo ~

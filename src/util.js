@@ -1,6 +1,16 @@
 const rem_emp = function (e) {return e !== "";}
 
 module.exports = { 
+  generate_id(){
+    let config = JSON.parse(fs.readFileSync(config_loc))
+    var ticket = "";
+    var characters = config["ticket-id-chars"].value;
+    for (var i = 0; i < config["ticket-id-length"].value; i++) {
+        ticket += characters.charAt(Math.floor(Math.random() * characters.length));
+        if (i == config["ticket-id-split"].value) ticket += "-";
+    }
+    return ticket
+  },
   diff(a,b){
     return (a>b)?(a-b):(b-a);
   },

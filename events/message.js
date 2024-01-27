@@ -19,6 +19,7 @@ module.exports = {
             if(!settings["allowed-servers"].includes(message.guild.id)||message.author.bot||message.member==null)
                 return;
 
+            
             //spam messages
             for(let i = 0; i < global.recent_messages.length; i++){
                 let diff = util.diff((new Date(message.createdTimestamp)).getUTCSeconds(),(new Date(global.recent_messages[i].createdTimestamp)).getUTCSeconds());
@@ -37,7 +38,7 @@ module.exports = {
                 }
             }
             global.recent_messages.push(message)
-            if(matching_ids.length > 3){
+            if(false && matching_ids.length > 3){
                 //let temp_msg = global.recent_messages;
                 global.recent_messages = global.recent_messages.filter(x => x.author != message.author)
                 let could_timeout = true
@@ -47,8 +48,8 @@ module.exports = {
                     could_timeout = false;
                 }
                 for(let mm of matching_ids){
-                    mm.delete();
-                    //try { await mm.delete(); } catch (e) {}
+                    //mm.delete();
+                    mm.delete().then().catch();
                 }
                 
                 let embed = new EmbedBuilder()

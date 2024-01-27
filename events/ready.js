@@ -11,17 +11,21 @@ module.exports = {
     async main (client,Discord){
         await db._raw.sync()
         let config = JSON.parse(fs.readFileSync(config_loc))
-        client.once("ready", () => {
+        client.once("ready", async () => {
             //preload
             global.channels = {}
             for(let guild of Object.keys(settings.preloads)){
-                
+                let mem = Object.fromEntries(await client.guilds.cache.get(guild).members.fetch())
+                console.log(Object.keys(mem))
+
                 for(let chan of Object.keys(settings.preloads[guild])){
                     let t_add = client.guilds.cache.get(guild).channels.cache.get(chan)
                     if(t_add==null)
                         console.log("failed to load "+chan+" from "+guild+", skipping");
                     else
-                        global.channels[settings.preloads[guild][chan].name] = t_add
+                        global.channels[settings.preloads[guild][chan].name] = t_add;
+
+                    
                 }
             }
             //end
