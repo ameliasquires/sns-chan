@@ -19,7 +19,8 @@ module.exports = {
         {type:"user",name:"user",desc:"message to be sent",required:true,autocomplete:false},
         {type:"string",name:"ban-reason",desc:"ban reason to be sent to the user",required:true,autocomplete:false},
         {type:"string",name:"details",desc:"staff note (mod side only)",required:false,autocomplete:false},
-        {type:"boolean",name:"send-appeal",desc:"whether to send your user id for appealing (default : false)", required:false,autocomplete:false}]},
+        {type:"boolean",name:"send-appeal",desc:"whether to send your user id for appealing (default : false)", required:false,autocomplete:false},
+        {type:"boolean",name:"open-thread",desc:"open a thread for discussion (default : false)", required:false,autocomplete:false}]},
     ],
   s_main(client,Discord,interaction){
     this.exec(client, {
@@ -28,6 +29,7 @@ module.exports = {
         reason : interaction.options.getString("ban-reason"),
         details : interaction.options.getString("details"),
         appeal : interaction.options.getBoolean("send-appeal"),
+        thread : interaction.options.getBoolean("open-thread"),
     })
   },
   async exec(client,param){
@@ -53,15 +55,18 @@ module.exports = {
     
     let confirms = [param.message.author.id]
     let mess = await param.message.reply({embeds:[embed],components:[row]})
-    let th = await client.channels.cache.get(param.message.channelId).threads.create({
-        name: param.user.user.username,
-        reason: 'Ban request discussion',
-        autoArchiveDuration: 60,
-        type: ChannelType.PublicThread,
-    })
+
+    if(param.thread){
+        let th = await client.channels.cache.get(param.message.channelId).threads.create({
+            name: param.user.user.username,
+            reason: 'Ban request discussion',
+            autoArchiveDuration: 60,
+            type: ChannelType.PublicThread,
+        })
+    }
 
     async function rec_read(){
-        const collectorFilter = i => i.user.id != param.message.author.id && !confirms.includes(i.user.id);
+        const collectorFilter = i => true || i.user.id != param.message.author.id && !confirms.includes(i.user.id);
         try {
             const confirmation = await mess.awaitMessageComponent({ filter: collectorFilter, time: 60000000 });
             if(confirmation.customId == "confirm"){
@@ -80,9 +85,18 @@ module.exports = {
                         .setFooter({text:"You have been banned from this server. Maybe in another life, we could have been friends. But not in this one. 💔"})
                         .setColor(settings.defaultColor)
                         .setFields({name : "Reason", value : param.reason})
-                        if(param.appeal) ban_embed.addFields({name : "Appeal id", value : "" + param.message.author.id})
-                    param.message.client.users.cache.get(param.user.id).send({embeds:[ban_embed]})
-                    embed.setTitle("Ban Confirmed | " + param.user.user.username);
+                    if(param.appeal) ban_embed.addFields({name : "Appeal id", value : "" + param.message.author.id})
+                    let user = await param.message.client.users.cache.get(param.user.id);
+                    let could_send = true
+                    try {
+                        await user.send({embeds:[ban_embed]})
+                    } catch (e) {
+                        could_send = false;
+                    }
+                    await param.user.ban();
+
+                    
+                    embed.setTitle("Ban Confirmed" + (!could_send?" | Unable to Message":""));
                     mess.edit({embeds:[embed],components:[]})
                 } else {
                     mess.edit({embeds:[embed]})

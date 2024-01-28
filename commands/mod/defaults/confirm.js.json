@@ -1,2 +1,2 @@
-{"cooldown":-1,"desc":"Creates a vote to ban/kick","restrict":[],"restricted":[],
-"usage":"{command} {action} {user} {desc}"}
+{"cooldown":-1,"desc":"Creates a vote to ban/kick","restrict":[1200889277786116121],"restricted":[],
+"usage":"{command} {action} {user} {desc}","mod_respect_restrict":true}
