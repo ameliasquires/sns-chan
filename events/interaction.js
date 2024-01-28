@@ -23,9 +23,10 @@ module.exports = {
                 interaction.user = interaction.guild.members.cache.get(interaction.user.id)
                 let mod = interaction.user.permissions!=null&&interaction.user.permissions?.has(PermissionsBitField.Flags.KickMembers)
                 let command = global.s_commands.find(o => o.name === interaction.commandName)
+                if(command.command.config.mod_respect_restrict) mod = false
                 if(!((!command.command.config.restrict||command.command.config.restrict.length==0||command.command.config.restrict.includes(interaction.channel.id))&&
                     (!command.command.config.restricted||command.command.config.restricted.length==0||!command.command.config.restricted.includes(interaction.channel.id)))
-                    &&!(mod&&!command.command.config.mod_respect_restrict))
+                    &&!(!command.command.config.mod_respect_restrict&&mod))
                     return interaction.reply({content:"you cannot send this here! try `sns help` for more info",ephemeral:true})
                 if(command==null)
                     return;
