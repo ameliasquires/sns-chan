@@ -4,6 +4,7 @@ const path = require("path");
 const { EmbedBuilder } = require("discord.js");
 let db = require("../src/db")
 let settings = require('../src/settings')
+let util = require("../src/util")
 let config_loc = __filename+".json"
 module.exports = {
     name : "interactionCreate",
@@ -21,7 +22,7 @@ module.exports = {
                 
                 await interaction.guild.members.fetch()
                 interaction.user = interaction.guild.members.cache.get(interaction.user.id)
-                let mod = interaction.user.permissions!=null&&interaction.user.permissions?.has(PermissionsBitField.Flags.KickMembers)
+                let mod = util.is_mod(interaction.member)
                 let command = global.s_commands.find(o => o.name === interaction.commandName)
                 if(command.command.config.mod_respect_restrict) mod = false
                 if(!((!command.command.config.restrict||command.command.config.restrict.length==0||command.command.config.restrict.includes(interaction.channel.id))&&

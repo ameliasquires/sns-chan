@@ -18,6 +18,7 @@ const dotenv = require("dotenv").config();
 const TOKEN = process.env.TOKEN;
 const path = require("path");
 let db = require("./src/db");
+let util = require("./src/util")
 
 const client = new Client({
   intents: [
@@ -119,7 +120,7 @@ fs.readdirSync("./commands/").forEach(folder => {
             .setName(com.name.replace(/ /g,'-'))
             .setDescription(com.config.desc)
           if(com.mod_only)
-            scom.setDefaultMemberPermissions(PermissionsBitField.Flags.KickMembers)
+            scom.setDefaultMemberPermissions(PermissionsBitField.Flags.ManageRoles)
           if(com.s_options!=null){
             update_options(scom,com.s_options);
           }

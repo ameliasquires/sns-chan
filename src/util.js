@@ -1,6 +1,9 @@
 const rem_emp = function (e) {return e !== "";}
 
-module.exports = { 
+module.exports = {
+  is_mod(member){
+    return member.permissions!=null&&member.roles.cache.has("586781513471885323")
+  },
   generate_id(){
     let config = JSON.parse(fs.readFileSync(config_loc))
     var ticket = "";

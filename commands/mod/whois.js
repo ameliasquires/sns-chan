@@ -3,6 +3,7 @@ const settings = require("../../src/settings")
 const { EmbedBuilder, PermissionsBitField } = require("discord.js");
 const fs = require('fs')
 const {upload_limit} = require("../../src/util")
+let util = require("../../src/util")
 const path = require('path')
 let config_loc = __filename+".json"
 let config = JSON.parse(fs.readFileSync(config_loc))
@@ -68,7 +69,7 @@ module.exports = {
   p_user(client,Discord,message,user){
     let join = new Date(parseInt(user.joinedTimestamp / 1000, 10)*1000).toLocaleDateString(undefined,{ weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     let created = new Date(parseInt(user.user.createdAt / 1000, 10)*1000).toLocaleDateString(undefined,{ weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-    let mod = user.permissions!=null&&user.permissions?.has(PermissionsBitField.Flags.KickMembers)
+    let mod = util.is_mod(user)
     let roles = ""
     let color = {pos:-1,color:settings.defaultColor};
 
@@ -113,7 +114,7 @@ module.exports = {
             m.delete()
         })
     }
-    let mod = role.permissions!=null&&role.permissions?.has(PermissionsBitField.Flags.KickMembers)
+    let mod = util.is_mod(role)
     const embed = new EmbedBuilder()
         .setTitle(role.name)
         .setDescription("<@&"+role.id+">"+(mod?" +able to use mod commands":""))

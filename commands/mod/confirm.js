@@ -7,20 +7,20 @@ const message = require("../../events/message");
 let config_loc = __filename+".json"
 let config = JSON.parse(fs.readFileSync(config_loc))
 module.exports = {
-  name: "sns",
-  command: ["sns"],
+  name: "ban",
+  command: ["ban"],
   mod_only:true,
   config:config,
   config_loc:config_loc,
   main(client,Discord,message,args) {
       
   },
-  s_options:[{type:"sub",name:"ban",options:[
+  s_options:[
         {type:"user",name:"user",desc:"message to be sent",required:true,autocomplete:false},
         {type:"string",name:"ban-reason",desc:"ban reason to be sent to the user",required:true,autocomplete:false},
         {type:"string",name:"details",desc:"staff note (mod side only)",required:false,autocomplete:false},
         {type:"boolean",name:"send-appeal",desc:"whether to send your user id for appealing (default : false)", required:false,autocomplete:false},
-        {type:"boolean",name:"open-thread",desc:"open a thread for discussion (default : false)", required:false,autocomplete:false}]},
+        {type:"boolean",name:"open-thread",desc:"open a thread for discussion (default : false)", required:false,autocomplete:false},
     ],
   s_main(client,Discord,interaction){
     this.exec(client, {

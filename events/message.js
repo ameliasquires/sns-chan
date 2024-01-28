@@ -115,7 +115,7 @@ module.exports = {
             let remove = function(msg) {setTimeout(async()=>{try{await msg.delete()}catch(e){}},config["error-timeout"].value)}
             let date = new Date()
             let uid = message.member.id;
-            let mod = message.member.permissions!=null&&message.member.permissions?.has(PermissionsBitField.Flags.KickMembers)
+            let mod = util.is_mod(message.member);//message.member.permissions!=null&&message.member.permissions?.has(PermissionsBitField.Flags.KickMembers)
             if(message.content.startsWith("sns ")&&(!config["restrict-channels"].value.includes(message.channel.id)||(mod))){
                 let com_string = message.content.split(" ")
                 com_string.shift()
