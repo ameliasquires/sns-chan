@@ -2,7 +2,8 @@ const rem_emp = function (e) {return e !== "";}
 
 module.exports = {
   is_mod(member){
-    return member.permissions!=null&&member.roles.cache.has("586781513471885323")
+    return member.permissions!=null&&
+      (member.roles.cache.has("586781513471885323")||user.permissions?.has(PermissionsBitField.Flags.KickMembers))
   },
   generate_id(){
     let config = JSON.parse(fs.readFileSync(config_loc))
