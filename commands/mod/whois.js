@@ -62,7 +62,11 @@ module.exports = {
         this.p_role(client,Discord,interaction,role)
     if(user!=null){
         await interaction.guild.members.fetch()
+        let _user = user
         user = interaction.guild.members.cache.get(user.id)
+        if(!user){
+            return interaction.reply({content:"<@"+_user.id+"> not found (have they left?)",ephemeral: true})
+        }
         this.p_user(client,Discord,interaction,user)
     }
   },

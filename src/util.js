@@ -1,9 +1,9 @@
 const rem_emp = function (e) {return e !== "";}
-
+const { ActivityType , PermissionsBitField} = require("discord.js");
 module.exports = {
   is_mod(member){
     return member.permissions!=null&&
-      (member.roles.cache.has("586781513471885323")||user.permissions?.has(PermissionsBitField.Flags.KickMembers))
+      (member.roles.cache.has("814558111234654258")||member.roles.cache.has("586781513471885323")||member.permissions?.has(PermissionsBitField.Flags.KickMembers))
   },
   generate_id(){
     let config = JSON.parse(fs.readFileSync(config_loc))

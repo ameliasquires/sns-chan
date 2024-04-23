@@ -13,6 +13,7 @@ module.exports = {
         await db._raw.sync()
         let config = JSON.parse(fs.readFileSync(config_loc))
         client.on("interactionCreate", async(interaction) => {
+            
             if(interaction.guild==null)return
             if(!settings["allowed-servers"].includes(interaction.guild.id))
                 return console.log("denied interaction from (guild)"+interaction.guild.id)

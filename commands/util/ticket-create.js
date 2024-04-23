@@ -4,8 +4,8 @@ let config_loc = __filename+".json"
 const { PermissionsBitField, ChannelType } = require('discord.js');
 let config = JSON.parse(fs.readFileSync(config_loc))
 module.exports = {
-    name : "ticket-create",
-    command: ["ticket-create"],
+    name : "thread-create",
+    command: ["thread-create"],
     mod_only: false,
     config:config,
     config_loc:config_loc,

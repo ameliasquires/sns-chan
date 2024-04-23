@@ -11,6 +11,9 @@ module.exports = {
             },
             "748790869938929737":{
                 name: "logging",
+            },
+            "825023574221783102":{
+                name: "general"
             }
         }
     }

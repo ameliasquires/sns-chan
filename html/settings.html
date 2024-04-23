@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<!--for embeds-->
+<meta property="og:type" content="website">
+<meta property="og:title" content="sns-chan settings">
+<meta property="og:description" content="verify with a key for details">
+<meta property="og:image" content="https://i.pinimg.com/originals/8f/52/1b/8f521bf9a52f7f9d3da912e4abf07979.png">
+<!--not ugly mobile view:p -->
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<html>
+
+<head>
+  <title>sns-chan</title>
+  
+</head>
+  <style>
+    body{
+        padding: 0;
+        margin: 0;
+        overflow: scroll;
+    }
+
+    a {
+        color:initial;
+        text-decoration: none;
+    }
+
+    #side-bar {
+        color:aliceblue;
+        overflow: scroll;
+        padding: 0;
+        background-color: #2c3142;
+        position: fixed;
+        top:0;
+        left:0;
+        min-width: 300px;
+        height: 100%;
+    }
+    #rest {
+        overflow:scroll;
+        margin-left: 300px;
+    }
+
+    .side-bar-dir{
+        background-color: rgba(0, 0, 10, 0.25);
+        padding: 5px;
+        margin: 5px;
+        border-radius: 2px;
+    }
+    .side-bar-dir:hover{
+        background-color: rgba(0, 0, 10, 0.20);
+    }
+
+    .side-bar-head{
+        font-size: 30px;
+        padding-left: 10px;
+    }
+    
+    .side-bar-item{
+        color:aliceblue;
+        background-color: rgba(0, 0, 10, 0.15);
+        font-size: 21px;
+        padding-left: 20px;
+    }
+    .side-bar-item:hover{
+        background-color: rgba(0, 0, 10, 0.08);
+    }
+  </style>
+  <script>
+    //cookie code taken from https://github.com/ameliasquires/kanna-site/blob/main/html/index.html
+    //which i probably stole from stackoverflow
+    function setCookie(name, value, days) {
+      var expires = "";
+      if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = "; expires=" + date.toUTCString();
+      }
+      document.cookie = name + "=" + (value || "") + expires + "; path=/";
+    }
+    function getCookie(name) {
+      var nameEQ = name + "=";
+      var ca = document.cookie.split(';');
+      for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+      }
+      return null;
+    }
+    function eraseCookie(name) {
+      document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+    }
+    function send(location, content) {
+      return new Promise((res, rej) => {
+        var xhr = new XMLHttpRequest();
+        let st = 'http://' + window.location.host + window.location.pathname + "/" + location
+        xhr.open("POST", st, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState == XMLHttpRequest.DONE) {
+            console.log('['+xhr.status+']'+' '+st)
+            res(xhr.responseText);
+          }
+        }
+        let out = {}
+        Object.assign(out, { json: true, enc: false }, content)
+        xhr.send(JSON.stringify(out))
+      })
+    }
+
+    let settings;
+    function fetch() {
+      return new Promise(async (res, rej) => {
+        if (getCookie('main_key') == null) {
+          setCookie('main_key', window.prompt('you do not have a valid key, contact ans-chan (@nekomusu) for it'), 90)
+        }
+
+        let data = await send('data', { key: getCookie('main_key') })
+        if (data == 'failed') {
+          alert('invalid key, clearing cookies')
+          eraseCookie('main_key')
+          fetch()
+          return
+        }
+        settings = JSON.parse(data)
+        res()
+      })
+    }
+
+    async function init() {
+      await fetch();
+
+      let push = "" 
+      for(let key in settings.data){
+        push += "<div class = 'side-bar-dir'>"
+              + "<div class = 'side-bar-head'>" + key + "</div>"
+        for(let i of settings.data[key]){
+            push += "<a href='/settings/"+key+"/"+i+"'><div class = 'side-bar-item'>" + i + "</div></a>"
+        }
+        push += "</div>"
+      }
+      
+      document.getElementById("side-bar").innerHTML = push
+
+      if(settings.sel != "null"){
+        console.log(settings.sel)
+        let sell = JSON.parse(settings.sel);
+        push = ""
+        function rec_awa(sel, key_app = ""){
+            push = ""
+            for(let key in sel){
+                if(typeof sel[key] !== 'object')
+                    push += key_app + key + ": <input type='text' value='"+sel[key]+"'></br>"
+                else if (sel[key].value != null) {
+                    if(sel[key].options == null) {
+                        if(typeof sel[key].value !== 'object')
+                            push += key_app + key + ": <input type='text' value='"+sel[key].value+"'></br>"
+                        else{
+                            push += rec_awa(sel[key].value, key_app + key + ".")
+                        }
+                    } else {
+                        push += key_app + key + ": <select>"
+                        for(let op of sel[key].options){
+                            push += "<option value='"+op+"'>"+op+"</option>"
+                        }
+                        push += "</select></br>"
+                    }
+                        
+                } else push += rec_awa(sel[key], key_app + key + ".")
+            }
+            return push
+        }
+        push = rec_awa(sell)
+        if(push == "") push = "nothing is here:c"
+        document.getElementById("rest").innerHTML = push
+      }
+
+      document.getElementById("rest").style.display = "block"
+
+    }
+  </script>
+  
+<body onload="init()">
+
+    <div id="side-bar">
+        <!--
+        <div class="side-bar-dir">
+            <div class="side-bar-head">tool</div>
+            <div class="side-bar-item">test</div>
+            <div class="side-bar-item">test2</div>
+        </div>-->
+
+    </div>
+
+    <div id="rest" style="display:none;">
+        <pre style="cursor: default;">
+        ████████        ████████  ████                                          
+        ██▓▓▒▒▓▓████  ██        ██    ██              ██████████                
+        ██▒▒████▓▓▓▓██    ░░    ░░      ██  ██████████▒▒▒▒▓▓▒▒██                
+        ██▓▓██░░████  ░░░░░░░░░░░░░░      ██▓▓▓▓▒▒▒▒▒▒▒▒████▒▒██                
+          ████░░██  ░░████████████░░░░░░░░  ▓▓▓▓▓▓▓▓████░░██▓▓██                
+            ████  ░░▓▓▓▓▓▓▓▓████▓▓▓▓██▓▓░░░░▒▒██▓▓██▒▒▒▒░░██▓▓▓▓                
+              ██░░▓▓▒▒▓▓▒▒▒▒▒▒▒▒▓▓▓▓▓▓▓▓▓▓░░░░░░██░░░░  ██▓▓▓▓                  
+            ██  ██▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓████░░░░██░░░░██▓▓██                  
+            ██░░██▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓██░░██░░██▓▓██                    
+              ██▒▒▒▒▒▒▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓██░░██▓▓██                      
+            ██▒▒▒▒▒▒▒▒▓▓▒▒▒▒▒▒▒▒▓▓▒▒▒▒▒▒▒▒▒▒▒▒▓▓██░░██████                       well...
+            ██▒▒▒▒▒▒▓▓▓▓▒▒▒▒▒▒▒▒▓▓▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓██▓▓▓▓██                      
+            ██▒▒▒▒▒▒▓▓██▒▒▒▒▒▒▒▒▓▓▒▒▒▒▒▒▓▓▒▒▒▒▒▒▓▓▓▓▓▓▓▓██                       select something first:p
+            ██▒▒▒▒▒▒▓▓██▒▒▒▒▒▒▓▓▓▓▒▒▒▒▒▒▓▓▒▒▒▒▒▒▓▓▓▓▓▓▓▓██                      
+            ██▒▒▒▒▓▓████▒▒▒▒▒▒▓▓██▒▒▒▒▓▓▓▓▒▒▒▒▒▒▓▓▓▓▓▓▓▓██                      
+              ██████░░░░██▒▒▒▒▓▓██▒▒▒▒▓▓██▒▒▒▒▒▒▓▓▓▓▓▓▓▓██                      
+            ██▓▓██▓▓▓▓▓▓░░██████░░██████▓▓▒▒▒▒▓▓▓▓▓▓▓▓▓▓██                      
+            ██▓▓██  ▒▒▒▒░░░░░░░░▓▓▓▓▓▓▒▒██▒▒▒▒▓▓▓▓▓▓▓▓▓▓██                      
+            ██▓▓▓▓░░░░░░░░░░░░░░  ▒▒▒▒░░▓▓▒▒▒▒▓▓▓▓▓▓▓▓██                        
+            ██▒▒██░░          ░░░░░░░░██▒▒▒▒▓▓▓▓▓▓▓▓▓▓██                        
+            ██▒▒▓▓██    ▓▓░░        ░░██▒▒▒▒▓▓▓▓▓▓▓▓▓▓██                        
+              ██▒▒██                ██▒▒▒▒▓▓▓▓▓▓▓▓▓▓██                          
+              ██▒▒██░░    ▒▒▒▒      ░░████▓▓▓▓▓▓▓▓██                            
+                ██▓▓██    ░░░░    ░░██░░██▒▒▓▓▓▓██                              
+                ██▒▒▓▓▓▓▓▓      ░░▓▓▒▒▓▓▒▒▒▒████                                
+              ██  ██▓▓██░░████████░░░░██████                                    
+            ██  ░░░░████  ██░░██    ░░░░██                                      
+          ██    ░░▓▓░░░░████░░░░██    ██░░▓▓██    ██████                        
+          ██  ▒▒░░▓▓░░▓▓▓▓▓▓██▓▓██▓▓▓▓░░░░░░░░▓▓██░░░░░░██                      
+        ██  ░░░░▓▓░░▓▓▓▓▓▓██▓▓██▓▓▓▓██░░░░░░░░░░██  ░░░░██                      
+          ██  ░░██░░██████░░██▓▓▓▓████░░░░  ░░██    ░░░░░░██                    
+        ██▓▓██░░██░░░░░░░░░░░░██▓▓██░░░░    ░░██  ░░░░████                      
+      ██▒▒▓▓▓▓██    ░░░░░░░░░░░░████░░░░░░░░░░██  ░░██▓▓▓▓██                    
+      ██▒▒▓▓██        ░░░░░░░░░░░░░░░░░░░░░░██    ██▓▓▓▓▓▓▓▓██                  
+    ██▒▒▓▓██          ░░██░░██░░    ░░░░██░░██  ░░██▓▓▓▓▓▓▓▓██                  
+  ██▒▒▓▓▓▓██          ░░░░██          ░░██░░██  ██▓▓▓▓▓▓▓▓▓▓▓▓██                
+  ██▒▒▓▓██░░          ░░██            ░░░░██    ██▓▓▓▓▒▒▓▓▒▒▓▓██                
+    ██▓▓████░░░░    ░░░░██            ░░░░██  ░░██▓▓▒▒▒▒▒▒▒▒▓▓██                
+  ██████    ████░░░░░░██              ░░░░██  ░░██▓▓▓▓▒▒▒▒▒▒▓▓▓▓██              
+██░░░░██    ░░░░██▓▓░░██░░          ░░░░░░▓▓  ░░██▓▓▓▓▓▓▓▓▓▓▓▓▓▓██              
+  ██░░██░░          ██████░░░░░░░░░░██▓▓██▓▓░░░░██▓▓▓▓▓▓▓▓▓▓▓▓██                
+    ████░░░░        ░░░░  ▓▓▓▓██████░░  ▒▒██░░░░██▓▓▒▒▓▓▓▓▓▓▓▓████              
+        ██░░░░░░░░░░░░░░                ░░░░██░░██▓▓▓▓▓▓▓▓▓▓██░░░░██            
+        ██░░░░░░░░░░▒▒░░░░            ░░░░░░████▓▓▓▓▓▓██████░░░░████            
+          ██░░░░░░░░████░░▒▒░░░░░░░░░░░░░░░░██▓▓██████░░░░░░░░██                
+          ░░██████▓▓▓▓▓▓██░░░░░░░░░░░░░░░░██▓▓▓▓██▒▒░░  ▓▓████                  
+            ██▓▓▓▓▓▓▓▓▓▓▓▓████░░░░░░░░████▓▓▓▓██      ██░░██                    
+            ██▒▒▓▓▒▒▒▒▒▒▓▓▓▓▓▓████████▓▓▓▓▓▓▓▓████████░░░░██                    
+                                                                        
+        </pre>
+    </div>
+  
+</body>
+
+</html>

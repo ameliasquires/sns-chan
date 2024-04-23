@@ -38,7 +38,7 @@ module.exports = {
             const vote = new ButtonBuilder()
                 .setLabel('Vote')
                 .setStyle(ButtonStyle.Link)
-                .setURL('https://top.gg/servers/486957006628847626/vote')
+                .setURL('https://discords.com/servers/486957006628847626/upvote')
                 //
             /*const twitter = new ButtonBuilder() //0% chance i will call this 𝕏
                 .setLabel('Twitter')
