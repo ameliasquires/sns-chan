@@ -93,7 +93,7 @@ module.exports = {
     }
 
     async function rec_read(){
-        const collectorFilter = i => true;//i.user.id != param.message.author.id && !confirms.includes(i.user.id);
+        const collectorFilter = i => i.user.id != param.message.author.id && !confirms.includes(i.user.id);
         try {
             const confirmation = await mess.awaitMessageComponent({ filter: collectorFilter, time: 60000000 });
             //confirmation.deferReply();

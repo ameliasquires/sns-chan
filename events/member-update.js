@@ -19,8 +19,8 @@ module.exports = {
                     for(let i = 0; i != global.notif.voted.length - 1; i++){
                         mess += "<@"+global.notif.voted[i]+">, ";
                     }
-                    if(global.notif.voted.length > 1) mess += " and"
-                    mess += " <@"+global.notif.voted[global.notif.voted.length - 1]+"> just voted! You can too by clicking [here](https://discords.com/servers/486957006628847626/upvote)"
+                    if(global.notif.voted.length > 1) mess += "and "
+                    mess += "<@"+global.notif.voted[global.notif.voted.length - 1]+"> just voted! You can too by clicking [here](https://discords.com/servers/486957006628847626/upvote)"
                 }
 
                 if(global.notif.joined.length != 0){
@@ -29,8 +29,8 @@ module.exports = {
                     for(let i = 0; i != global.notif.joined.length - 1; i++){
                         mess += "<@"+global.notif.joined[i]+">, ";
                     }
-                    if(global.notif.joined.length > 1) mess += " and"
-                    mess += " <@"+global.notif.joined[global.notif.joined.length - 1]+">!"
+                    if(global.notif.joined.length > 1) mess += "and "
+                    mess += "<@"+global.notif.joined[global.notif.joined.length - 1]+">!"
                 }
                 message.edit({content: mess, flags:[4096]})
             } else {

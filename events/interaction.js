@@ -43,7 +43,7 @@ module.exports = {
                 await command.command.s_main(client,Discord,interaction);
 
             } else if (interaction.isAutocomplete()){
-
+                console.log(interaction.user.id)
                 const focused = interaction.options.getFocused(true);
                 let command = global.s_commands.find(o => o.name === interaction.commandName)
                 if(interaction.options._subcommand!=null){
@@ -57,9 +57,14 @@ module.exports = {
                 const filtered = autocomplete.filter(choice => choice.startsWith(focused.value));
                 if(filtered.length>25)
                     filtered.length=25
+                try{
                 await interaction.respond(
                     filtered.map(choice => ({ name: choice, value: choice })),
                 );
+                } catch(e) {
+                    console.log(e)
+                    console.log("failed to send autocomplete")
+                }
 
             }
         })
