@@ -67,7 +67,7 @@ db.Track = _db_raw.define('Track', {
 });
 
 try {
-    //db.BattleShip.sync({force:true})
+    db.BattleShip.sync({force:true})
     db._raw.authenticate();
     console.log('db connected');
 } catch (error) {

@@ -8,7 +8,7 @@ let config_loc = __filename+".json"
 module.exports = {
     name : "guildMemberUpdate",
     config_loc : config_loc,
-    build_message(p, t){
+    _build_message(p, t){
         global.channels["general"].messages.fetch({limit : 1}).then(async messages => {
             let message = messages.first();
             if(message.id == global.notif.id){
@@ -48,6 +48,47 @@ module.exports = {
             }
         })
     },
+    build_message(p, t){
+        let lim = 1;
+        let types = {
+            voted: {start: "", end: " just voted! You can too by clicking [here](https://discords.com/servers/486957006628847626/upvote)"},
+            joined: {start: "Welcome to the server ", end: "!"},
+        }
+        global.channels["general"].messages.fetch({limit : lim}).then(async messages => {
+            //console.log(messages)
+            let found = false
+            let message = null
+            for(let m of messages){
+                if(m[0] == global.notif[t+"_id"]){
+                    if(lim == 1) message = m[1];
+                        else {
+                        try{
+                            await m[1].delete()
+                        } catch(e) {
+                            console.log("failed to delete message")
+                        }
+                    }
+                    found = true
+                    break
+                }
+            }
+            if(!found) global.notif[t] = [p]
+            let con = types[t].start
+            for(let i = 0; i != global.notif[t].length - 1; i++){
+                con += "<@"+global.notif[t][i]+">, "
+            }
+            if(global.notif[t].length > 1) con += "and "
+            con += "<@"+global.notif[t][global.notif[t].length - 1]+">"+types[t].end
+
+            if(lim == 1 && !found || lim != 1){
+                global.notif[t+"_id"] = await global.channels["general"].send({content:con, flags:[4096]})
+            } else {
+                message.edit({content:con, flags:[4096]})
+            }
+            
+
+        })
+    },
     async main (client,Discord){
         client.on("guildMemberUpdate",(oldMember, newMember)=>{
             if(!oldMember.roles.cache.has("761225110060662854") && 
@@ -56,7 +97,7 @@ module.exports = {
                 if(global.notif == null)
                     global.notif = {}
                 if(global.notif.voted == null)
-                global.notif.joined = global.notif.voted = []
+                    global.notif.joined = global.notif.voted = []
 
                 global.notif.voted.push(newMember.id)
 
