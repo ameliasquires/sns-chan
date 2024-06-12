@@ -22,8 +22,10 @@
     "ffmpeg-static": "^4.2.3",
     "git-changed-files": "^1.0.0",
     "git-last-commit": "^1.0.1",
+    "node-persist": "^2.1.0",
     "os-utils": "^0.0.14",
     "sequelize": "^6.32.1",
+    "serialize-javascript": "^6.0.2",
     "sharp": "^0.32.6",
     "sqlite3": "^5.1.6",
     "weeby-js": "^1.0.3"

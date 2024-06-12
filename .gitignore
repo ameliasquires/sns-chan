@@ -72,3 +72,4 @@ db/*
 #aaaaand any client secrets
 .env
 log
+.node-persist

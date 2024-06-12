@@ -5,6 +5,7 @@ const { EmbedBuilder } = require("discord.js");
 let db = require("../src/db")
 let settings = require('../src/settings')
 let config_loc = __filename+".json"
+
 module.exports = {
     name : "ready",
     config_loc : config_loc,
@@ -12,6 +13,7 @@ module.exports = {
         await db._raw.sync()
         let config = JSON.parse(fs.readFileSync(config_loc))
         client.once("ready", async () => {
+
             //preload
             global.channels = {}
             for(let guild of Object.keys(settings.preloads)){
@@ -30,7 +32,7 @@ module.exports = {
             }
             //end
 
-            //register slash commands
+            //register slash/user commands
             let passed = 0;
             let failed = 0;
             client.guilds.cache.forEach((g)=>{

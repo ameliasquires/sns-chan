@@ -14,6 +14,9 @@ module.exports = {
             },
             "825023574221783102":{
                 name: "general"
+            },
+            "1200889277786116121":{
+                name: "staff-actions"
             }
         }
     }
