@@ -7,6 +7,7 @@ const message = require("../../events/message");
 let config_loc = __filename+".json"
 let config = JSON.parse(fs.readFileSync(config_loc))
 let { Events, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
+const llog = require("../../src/logg")
 const preserve = require("../../src/interaction-preserve")
 module.exports = {
   name: "ban",
@@ -181,14 +182,14 @@ module.exports = {
                     try {
                         await user.send({embeds:[ban_embed]})
                     } catch (e) {
-                        console.log(e)
+                        console.error(e)
                         could_send = false;
                     }
                     try{
                         user = param.message.guild.members.cache.get(user.id)
                         await user.ban({deleteMessageSeconds: 60 * 60 * 24 * 7, reason: param.reason})
                     } catch (e) {
-                        console.log(e)
+                        console.error(e)
                         could_ban = false;
                     }
                     
@@ -206,7 +207,7 @@ module.exports = {
                 mess.edit({embeds:[embed],components:[]})
             }
         } catch (e) {
-            console.log(e)
+            console.error(e)
         }
     }
     //await rec_read();
@@ -248,14 +249,14 @@ module.exports = {
                     try {
                         await user.send({embeds:[ban_embed]})
                     } catch (e) {
-                        console.log(e)
+                        console.error(e)
                         could_send = false;
                     }
                     try{
                         user = interaction.guild.members.cache.get(user.id)
                         await user.ban({deleteMessageSeconds: 60 * 60 * 24 * 7, reason: data.param.reason})
                     } catch (e) {
-                        console.log(e)
+                        console.error(e)
                         could_ban = false;
                     }
                     

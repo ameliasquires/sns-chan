@@ -55,22 +55,26 @@ module.exports = {
                 {type:"string",name:"footer",desc:"footer text",required:false,autocomplete:false},
             ]}],
     async s_main (client,Discord,interaction){
-        let action = interaction.options.getSubcommand()
-        if(action == "text"){
-            this.exec(client,
-                {echo:interaction.options.getString("echo"),
-                id:interaction.options.getChannel("channel") ?? interaction.channel})
-            await interaction.reply({ content:'sent', ephemeral: true })
-            interaction.deleteReply()
-        } else if(action == "embed"){
-            this.embed_exec(client, {msg:interaction,id:interaction.channel})
+        try{
+            let action = interaction.options.getSubcommand()
+            if(action == "text"){
+                this.exec(client,
+                    {echo:interaction.options.getString("echo"),
+                    id:interaction.options.getChannel("channel") ?? interaction.channel})
+                await interaction.reply({ content:'sent', ephemeral: true })
+                interaction.deleteReply()
+            } else if(action == "embed"){
+                this.embed_exec(client, {msg:interaction,id:interaction.channel})
+            }
+        } catch(e) {
+            info.interaction.channel.reply({ content: 'error sending message, most likely from permissions or length', ephemeral: true})
         }
         
         
     },
 
     async exec(client,info){
-        return info.id.send(info.echo)
+        return await info.id.send(info.echo)
     },
 
     async embed_exec(client, info){

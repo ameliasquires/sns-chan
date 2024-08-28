@@ -1,12 +1,4 @@
 const { stringify } = require('querystring');
-let serialize = require('serialize-javascript');
-function deserialize(i){
-    return eval('(' + i + ')');
-  }
-global.preserve = {}
-global.preserve.interactions = require('node-persist')
-global.preserve.interactions.initSync({dir:"./.node-persist/interaction",parse:deserialize,
-     stringify:serialize})
 
 module.exports = {
     register: async (id, fn, data) => {

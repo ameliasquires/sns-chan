@@ -4,12 +4,15 @@ const fs = require('fs')
 const path = require("path");
 let db = require("../src/db")
 let settings = require("../src/settings")
+const llog = require("../src/logg")
 let config_loc = __filename+".json"
 module.exports = {
     name : "dm",
     config_loc : config_loc,
     async main (client,Discord,message){
+        llog.debug("dm")
         if(message==null||message.author.bot)return;
+        llog.debug("dm " + message.author.id)
         let config = JSON.parse(fs.readFileSync(config_loc))
         //start tickets
         let date = new Date().toLocaleString()

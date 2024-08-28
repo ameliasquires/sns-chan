@@ -4,6 +4,7 @@ const path = require("path");
 const { EmbedBuilder } = require("discord.js");
 let db = require("../src/db")
 let settings = require("../src/settings")
+let llog = require("../src/logg")
 let config_loc = __filename+".json"
 module.exports = {
     name : "guildMemberUpdate",
@@ -65,7 +66,7 @@ module.exports = {
                         try{
                             await m[1].delete()
                         } catch(e) {
-                            console.log("failed to delete message")
+                            llog.error("failed to delete message")
                         }
                     }
                     found = true

@@ -6,6 +6,7 @@ const fs = require('fs');
 let db = require("../src/db");
 const path = require("path")
 const Tickets = db.Tickets
+const llog = require("./logg")
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -23,7 +24,7 @@ app.post('/tickets/data', async (req, res) => {
 })
 app.post('/tickets/edit', async (req, res) => {
   if(req.body.key == key){
-    console.log('pass')
+    llog.log('pass')
 		res.send('pass')
   }
   else
@@ -71,7 +72,7 @@ for(let dir of settings_dirs){
   })
 }
 
-console.log(settings_full)
+//console.log(settings_full)
 app.get('/settings/', async (req, res) => {
   res.sendFile(path.join(__dirname+'/../html/settings.html'))
 })
@@ -94,10 +95,10 @@ for(let ddir in settings_full){
       let data = {data:settings_full,sel:c.toString()}
       res.send(JSON.stringify(data))
     })
-    console.log('/settings/'+at)
+    //console.log('/settings/'+at)
     app.get('/settings/'+at, async (req, res) => {
       res.sendFile(path.join(__dirname+'/../html/settings.html'))
     })
   }
 }
-app.listen(port, () => console.log(`listening at http://localhost:${port}`));
+app.listen(port, () => llog.log(`listening at http://localhost:${port}`));
