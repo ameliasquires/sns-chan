@@ -10,7 +10,13 @@ module.exports = {
     name : "guildMemberAdd",
     config_loc : config_loc,
     async main (client,Discord){
-        client.on("guildMemberAdd",(m)=>{
+        client.on("guildMemberAdd",async (m)=>{
+            if(await global.preserve.blacklist.getItem(m.id) != null) {
+                await global.preserve.blacklist.removeItem(m.id)
+                m.ban()
+                global.channels["logging"].send("banned blacklisted user <@"+m.id+"> ("+m.id+")")
+                return;
+            }
             //global.channels.general.send("Welcome to the server <@"+m.id+">!")
             if(global.notif == null)
                 global.notif = {}

@@ -5,6 +5,8 @@ const { EmbedBuilder } = require("discord.js");
 let db = require("../src/db")
 let settings = require('../src/settings')
 let util = require("../src/util")
+const llog = require("../src/logg")
+
 let config_loc = __filename+".json"
 module.exports = {
     name : "interactionCreate",
@@ -13,10 +15,11 @@ module.exports = {
         await db._raw.sync()
         let config = JSON.parse(fs.readFileSync(config_loc))
         client.on("interactionCreate", async(interaction) => {
+            llog.debug("interaction " + interaction.user.id);
             
             if(interaction.guild==null)return
             if(!settings["allowed-servers"].includes(interaction.guild.id))
-                return console.log("denied interaction from (guild)"+interaction.guild.id)
+                return llog.error("denied interaction from (guild)"+interaction.guild.id)
             let date = new Date()
             interaction.author = interaction.user
             if(interaction.isChatInputCommand() || interaction.isUserContextMenuCommand()){
@@ -44,7 +47,7 @@ module.exports = {
                 await command.command[interaction.isChatInputCommand()?"s_main":"c_main"](client,Discord,interaction);
 
             } else if (interaction.isAutocomplete()){
-                console.log(interaction.user.id + " : autocomplete")
+                llog.log(interaction.user.id + " : autocomplete")
                 const focused = interaction.options.getFocused(true);
                 let command = global.s_commands.find(o => o.name === interaction.commandName)
                 if(interaction.options._subcommand!=null){
@@ -63,15 +66,14 @@ module.exports = {
                     filtered.map(choice => ({ name: choice, value: choice })),
                 );
                 } catch(e) {
-                    console.log(e)
-                    console.log("failed to send autocomplete")
+                    llog.error(e)
+                    llog.error("failed to send autocomplete")
                 }
 
             } else if (interaction.isButton()){
-                console.log(global.preserve.interactions.length())
+                llog.log(global.preserve.interactions.length())
                 let sel = await global.preserve.interactions.getItem(interaction.message.id)
                 if(sel != null){
-                    console.log("hi")
                     sel.data = await sel.fn(sel.data, interaction);
                     global.preserve.interactions.setItem(interaction.message.id, sel)
                 }

@@ -7,6 +7,7 @@ const { PermissionsBitField } = require('discord.js');
 const { EmbedBuilder } = require("discord.js");
 const util = require("../src/util")
 let settings = require('../src/settings')
+const llog = require("../src/logg")
 let config_loc = __filename+".json"
 module.exports = {
     name : "messageCreate",
@@ -14,6 +15,7 @@ module.exports = {
     async main (client,Discord){
         let config = JSON.parse(fs.readFileSync(config_loc))
         client.on("messageCreate", async (message) => {
+            llog.debug("message " + message.author.id)
             if(message.guild==null)
                 return require("./dm").main(client,Discord,message)
             if(!settings["allowed-servers"].includes(message.guild.id)||message.author.bot||message.member==null)
@@ -21,7 +23,7 @@ module.exports = {
 
             
             //spam messages
-            for(let i = 0; i < global.recent_messages.length; i++){
+            /*for(let i = 0; i < global.recent_messages.length; i++){
                 let diff = util.diff((new Date(message.createdTimestamp)).getUTCSeconds(),(new Date(global.recent_messages[i].createdTimestamp)).getUTCSeconds());
 
                 if(diff>2){
@@ -58,7 +60,7 @@ module.exports = {
                     .setDescription("<@"+message.author.id+"> sent "+matching_ids.length+" messages, similar to or matching \n`"+message.content+"`")
 
                 global.channels["admin-chan"].send({ embeds: [embed]})
-            }
+            }*/
             //done w/ spam
 
             //track message
@@ -142,7 +144,7 @@ module.exports = {
                                 message.reply(config["error-message-not-here"].value).then((msg)=>{remove(msg)})
                         } catch(e) {
                             message.reply(config["error-message"].value + "\n```"+e.stack+"```").then((msg)=>{remove(msg)})
-                            console.log(e.stack)
+                            llog.error(e.stack)
                         }
                         break;
                     }

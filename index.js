@@ -8,7 +8,8 @@ process.stdout.write = process.stderr.write  = (function(write) {
   }
 })(process.stdout.write)
 process.title = "sns\-chan"
-console.log("["+process.pid+"] running under the name "+process.title)
+const llog = require("./src/logg")
+llog.log("["+process.pid+"] running under the name "+process.title)
 /**
  * Module Imports
  */
@@ -123,7 +124,7 @@ async function main(){
               .setName(com.name.replace(/ /g,'-'))
               .setDescription(com.config.desc)
             if(com.mod_only)
-              scom.setDefaultMemberPermissions(PermissionsBitField.Flags.ManageRoles)
+              scom.setDefaultMemberPermissions(PermissionsBitField.Flags.ModerateMembers)
             if(com.s_options!=null){
               update_options(scom,com.s_options);
             }
@@ -136,18 +137,18 @@ async function main(){
               .setName(com.name.replace(/ /g,'-'))
               .setType(ApplicationCommandType.User)
             if(com.mod_only)
-              ccom.setDefaultMemberPermissions(PermissionsBitField.Flags.ManageRoles)
+              ccom.setDefaultMemberPermissions(PermissionsBitField.Flags.ModerateMembers)
             ccom = ccom.toJSON()
             ccom.command = com
             s_commands.push(ccom)
           }
         } catch (e) {
           if(e.code=="ENOENT"){
-            console.log("[ENOENT] missing some config files:( run 'sh buildconfig.sh' to get them\nexiting~")
+            llog.error("[ENOENT] missing some config files:( run 'sh buildconfig.sh' to get them\nexiting~")
             process.exit(e.errno)
           }
-          console.log("["+e.code+"]"+" unexpected error:( something is wrong with the ./commands/*/* files\n****\n")
-          console.log(e)
+          llog.error("["+e.code+"]"+" unexpected error:( something is wrong with the ./commands/*/* files\n****\n")
+          llog.error(e)
           
           process.exit(e.errno)
         }
@@ -175,7 +176,7 @@ async function main(){
   try{
     require("./src/webui")
   } catch(e) {
-    console.log("failed loading webui:c")
+    llog.error("failed loading webui:c")
   }
 }
 main()

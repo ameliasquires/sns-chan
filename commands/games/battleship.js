@@ -5,6 +5,7 @@ const { PermissionsBitField, EmbedBuilder, AttachmentBuilder,ActionRowBuilder,Bu
 let config = JSON.parse(fs.readFileSync(config_loc))
 const util = require("../../src/util.js")
 const sharp = require("sharp");
+const llog = require("../../src/logg")
 const db = require("../../src/db.js")
 module.exports = {
     name : "battleship",
@@ -34,9 +35,9 @@ module.exports = {
             .setCustomId('up')
             .setEmoji('⬆️')
             .setStyle(ButtonStyle.Primary);
-        const down = new ButtonBuilder()
-            .setCustomId('down')
-            .setEmoji('⬇️')
+            const down = new ButtonBuilder()
+                .setCustomId('down')
+                .setEmoji('⬇️')
             .setStyle(ButtonStyle.Primary);
         const right = new ButtonBuilder()
             .setCustomId('right')
@@ -146,7 +147,7 @@ module.exports = {
                 return rec_edit(mess)
                 
             } catch (e) {
-                console.log(e)
+                llog.error(e)
             }
         }
         return await rec_edit(mess)

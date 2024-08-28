@@ -1,0 +1,2 @@
+{"cooldown":-1,"desc":"Blacklist a user id, once banned blacklist will be removed","restrict":[],"restricted":[],
+"usage":"{command} (del | dump) [id, ...]"}

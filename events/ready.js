@@ -5,6 +5,7 @@ const { EmbedBuilder } = require("discord.js");
 let db = require("../src/db")
 let settings = require('../src/settings')
 let config_loc = __filename+".json"
+const llog = require('../src/logg')
 
 module.exports = {
     name : "ready",
@@ -18,12 +19,12 @@ module.exports = {
             global.channels = {}
             for(let guild of Object.keys(settings.preloads)){
                 let mem = Object.fromEntries(await client.guilds.cache.get(guild).members.fetch())
-                console.log(Object.keys(mem))
+                //console.log(Object.keys(mem))
 
                 for(let chan of Object.keys(settings.preloads[guild])){
                     let t_add = client.guilds.cache.get(guild).channels.cache.get(chan)
                     if(t_add==null)
-                        console.log("failed to load "+chan+" from "+guild+", skipping");
+                        llog.error("failed to load "+chan+" from "+guild+", skipping");
                     else
                         global.channels[settings.preloads[guild][chan].name] = t_add;
 
@@ -38,18 +39,18 @@ module.exports = {
             client.guilds.cache.forEach((g)=>{
                 if(settings["allowed-servers"].includes(g.id)){
                     g.commands.set(global.s_commands).catch((e)=>{
-                        console.log("unable to load commands for " + g.id + "\n\n****\n")
-                        console.log(e)
+                        llog.error("unable to load commands for " + g.id + "\n\n****\n")
+                        llog.error(e)
                     })
                     passed++;
                 } else {
                     failed++;
                 }
             })
-            console.log("loaded "+global.s_commands.length+" slash commands for "+passed+" guilds, and denied "+failed+" guilds")
+            llog.log("loaded "+global.s_commands.length+" slash commands for "+passed+" guilds, and denied "+failed+" guilds")
             //done w/ slash commands
             
-            console.log("online!")
+            llog.log("online!")
             function set_pres() {
                 client.user.setPresence({
                     activities: [{ name: config.status.value, type: ActivityType[config.type.value] }]

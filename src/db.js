@@ -1,5 +1,6 @@
 const path = require('path');
 const { Sequelize, DataTypes } = require('sequelize');
+const llog = require("../src/logg")
 
 const _db_raw = new Sequelize({
     dialect: 'sqlite',
@@ -69,11 +70,25 @@ db.Track = _db_raw.define('Track', {
 try {
     db.BattleShip.sync({force:true})
     db._raw.authenticate();
-    console.log('db connected');
+    llog.log('db connected');
 } catch (error) {
-    console.error('Unable to connect to the database:', error);
+    llog.error('Unable to connect to the database:', error);
 }
 
 _db_raw.sync()
+
+const persist = require("node-persist")
+let serialize = require('serialize-javascript');
+function deserialize(i){
+    return eval('(' + i + ')');
+}
+
+global.preserve = {}
+
+global.preserve.interactions = persist.create({dir:"./.node-persist/interaction", parse:deserialize, stringify:serialize})
+global.preserve.interactions.init()
+
+global.preserve.blacklist = persist.create({dir:"./.node-persist/blacklist", parse:deserialize, stringify:serialize})
+global.preserve.blacklist.init()
 
 module.exports = db
